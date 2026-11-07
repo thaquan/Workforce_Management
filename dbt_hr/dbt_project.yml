@@ -1,0 +1,20 @@
+name: "hr_workforce"
+version: "1.0.0"
+config-version: 2
+profile: "hr_workforce"
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+clean-targets: ["target", "dbt_packages", "logs"]
+
+models:
+  hr_workforce:
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: view
+      +schema: staging
+    marts:
+      +materialized: table
+      +schema: marts

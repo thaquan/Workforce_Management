@@ -11,3 +11,7 @@ __pycache__/
 *.py[cod]
 *.log
 .ipynb_checkpoints/
+/dbt_hr/target/
+/dbt_hr/logs/
+/dbt_hr/dbt_packages/
+/dbt_hr/.user.yml

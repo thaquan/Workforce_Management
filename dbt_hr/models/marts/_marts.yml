@@ -1,0 +1,188 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: Full daily calendar from earliest hire/event to latest reporting day.
+    columns:
+      - name: date
+        data_tests: [not_null, unique]
+      - name: date_key
+        data_tests: [not_null, unique]
+  - name: dim_department
+    description: Conformed department dimension.
+    columns:
+      - name: department_id
+        data_tests: [not_null, unique]
+  - name: dim_location
+    description: Conformed work location dimension.
+    columns:
+      - name: location_id
+        data_tests: [not_null, unique]
+  - name: dim_level
+    description: Conformed employee level dimension.
+    columns:
+      - name: level
+        data_tests: [not_null, unique]
+  - name: dim_employee
+    description: Current or final employee profile; not a historical SCD Type 2.
+    columns:
+      - name: employee_id
+        data_tests: [not_null, unique]
+      - name: department_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_department')
+                field: department_id
+      - name: location_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_location')
+                field: location_id
+
+  - name: fct_workforce_snapshot
+    description: Month-end headcount/FTE snapshot by month department location and level.
+    columns:
+      - name: month
+        data_tests: [not_null]
+      - name: department_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_department')
+                field: department_id
+      - name: location_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_location')
+                field: location_id
+      - name: level
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_level')
+                field: level
+
+  - name: fct_employee_events
+    description: Employee hire/termination event stream in its recorded historical department.
+    columns:
+      - name: event_id
+        data_tests: [not_null, unique]
+      - name: employee_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_employee')
+                field: employee_id
+      - name: department_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_department')
+                field: department_id
+  - name: fct_compensation_versions
+    description: Effective-dated salary history; never sum historical salary versions.
+    columns:
+      - name: employee_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_employee')
+                field: employee_id
+  - name: fct_performance_reviews
+    description: Dated employee performance assessments.
+    columns:
+      - name: employee_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_employee')
+                field: employee_id
+  - name: fct_engagement_surveys
+    description: Dated employee engagement surveys.
+    columns:
+      - name: employee_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_employee')
+                field: employee_id
+  - name: fct_absences
+    description: Employee-level absence records.
+    columns:
+      - name: employee_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_employee')
+                field: employee_id
+  - name: fct_recruitment_monthly
+    description: Department-month aggregate recruitment counts, not candidate history.
+    columns:
+      - name: month
+        data_tests: [not_null]
+      - name: department_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_department')
+                field: department_id
+  - name: fct_workforce_targets
+    description: Month-department workforce plan with scenario changes.
+    columns:
+      - name: month
+        data_tests: [not_null]
+      - name: department_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_department')
+                field: department_id
+
+  - name: mart_workforce_monthly
+    description: Workforce distribution for one selected month; time-semi-additive.
+    columns:
+      - name: month
+        data_tests: [not_null]
+  - name: mart_attrition_monthly
+    description: Monthly department exits versus average snapshot HC; status flags provisional rates.
+    columns:
+      - name: month
+        data_tests: [not_null]
+      - name: department_id
+        data_tests: [not_null]
+  - name: mart_workforce_plan_vs_actual
+    description: Actual workforce matched with plan at Month x Department grain.
+    columns:
+      - name: month
+        data_tests: [not_null]
+      - name: department_id
+        data_tests: [not_null]
+  - name: mart_recruitment_monthly
+    description: Monthly department recruiting counts and weighted days-to-fill numerator.
+    columns:
+      - name: month
+        data_tests: [not_null]
+      - name: department_id
+        data_tests: [not_null]
+  - name: mart_workforce_reconciliation
+    description: Monthly source snapshot versus employee-as-of variance and review status.
+    columns:
+      - name: month
+        data_tests: [not_null, unique]
+  - name: mart_retention_analysis
+    description: Employee observations cut off before exit; contains private HR features.
+    columns:
+      - name: employee_id
+        data_tests: [not_null, unique]
+  - name: mart_salary_run_rate_monthly
+    description: Latest eligible annual salary in EUR by month; no budget comparison.
+    columns:
+      - name: month
+        data_tests: [not_null, unique]

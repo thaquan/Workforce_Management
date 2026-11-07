@@ -65,3 +65,25 @@ python -m unittest discover -s tests -p "test_*.py" -v
 ```
 
 Use `$env:HR_INTEGRATION_TESTS="1"` to enable live database tests. Raw HR data, local credentials and generated employee-level artifacts remain excluded from Git. Known source limitations from Phase 1 are still visible; no raw data was rewritten to hide them.
+
+## Phase 3 — dbt Analytics Warehouse
+
+Phase 3 introduces a dedicated, locally reproducible dbt Core project under
+[`dbt_hr/`](dbt_hr), using **12 staging views, four intermediate views, five
+dimensions, eight fact tables and seven analytics marts**. It includes 83
+dbt tests, Python model checks, and generated dbt lineage/catalog.
+
+See the [Phase 3 handoff](docs/phase3/README.md), [KPI and grain
+contracts](docs/phase3/02_kpi_semantics.md), [runbook](docs/phase3/03_runbook.md)
+and [acceptance report](reports/phase3/acceptance_report.md).
+
+```powershell
+python -m pip install -r requirements.txt -r requirements-dbt.txt
+python -m src.phase3.dbt_runner debug
+python -m src.phase3.dbt_runner build
+python -m src.phase3.dbt_runner docs generate
+```
+
+Power BI reporting is a future phase. The source snapshot discrepancy remains
+explicitly flagged; salary-budget variance and internal mobility are not
+represented as validated KPIs.

@@ -1,0 +1,31 @@
+version: 2
+
+sources:
+  - name: raw_hr
+    description: Immutable source replicas loaded by Phase 2 Python ingestion.
+    schema: raw
+    tables:
+      - name: dim_employee
+        description: Source worksheet DimEmployee; preserve original business grain.
+      - name: fact_monthly_snapshot
+        description: Source worksheet FactMonthlySnapshot; preserve original business grain.
+      - name: fact_employee_events
+        description: Source worksheet FactEmployeeEvents; preserve original business grain.
+      - name: fact_compensation
+        description: Source worksheet FactCompensation; preserve original business grain.
+      - name: fact_performance
+        description: Source worksheet FactPerformance; preserve original business grain.
+      - name: fact_engagement
+        description: Source worksheet FactEngagement; preserve original business grain.
+      - name: fact_absence
+        description: Source worksheet FactAbsence; preserve original business grain.
+      - name: fact_recruitment
+        description: Source worksheet FactRecruitment; preserve original business grain.
+      - name: workforce_targets
+        description: Source worksheet WorkforceTargets; preserve original business grain.
+      - name: dim_department
+        description: Source worksheet DimDepartment; preserve original business grain.
+      - name: dim_location
+        description: Source worksheet DimLocation; preserve original business grain.
+      - name: dim_date
+        description: Source worksheet DimDate; preserve original business grain.

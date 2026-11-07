@@ -1,0 +1,265 @@
+version: 2
+
+models:
+  - name: stg_dim_employee
+    description: Typed, lossless staging view of source DimEmployee.
+    columns:
+      - name: employee_id
+        description: Source column EmployeeID.
+        data_tests:
+          - not_null
+          - unique
+      - name: department_id
+        description: Source column DepartmentID.
+      - name: department
+        description: Source column Department.
+      - name: role
+        description: Source column Role.
+      - name: level
+        description: Source column Level.
+      - name: location_id
+        description: Source column LocationID.
+      - name: location
+        description: Source column Location.
+      - name: manager_id
+        description: Source column ManagerID.
+      - name: gender
+        description: Source column Gender.
+      - name: birth_year
+        description: Source column BirthYear.
+      - name: age_band
+        description: Source column AgeBand.
+      - name: hire_date
+        description: Source column HireDate.
+      - name: termination_date
+        description: Source column TerminationDate.
+      - name: employment_status
+        description: Source column EmploymentStatus.
+      - name: termination_type
+        description: Source column TerminationType.
+      - name: termination_reason
+        description: Source column TerminationReason.
+      - name: fte
+        description: Source column FTE.
+      - name: tenure_months_at_exit_or_end
+        description: Source column TenureMonthsAtExitOrEnd.
+      - name: tenure_band_at_exit_or_end
+        description: Source column TenureBandAtExitOrEnd.
+  - name: stg_fact_monthly_snapshot
+    description: Typed, lossless staging view of source FactMonthlySnapshot.
+    columns:
+      - name: month
+        description: Source column Month.
+        data_tests:
+          - not_null
+      - name: department_id
+        description: Source column DepartmentID.
+        data_tests:
+          - not_null
+      - name: department
+        description: Source column Department.
+      - name: location_id
+        description: Source column LocationID.
+        data_tests:
+          - not_null
+      - name: location
+        description: Source column Location.
+      - name: level
+        description: Source column Level.
+        data_tests:
+          - not_null
+      - name: headcount
+        description: Source column Headcount.
+      - name: fte
+        description: Source column FTE.
+      - name: avg_tenure_months
+        description: Source column AvgTenureMonths.
+  - name: stg_fact_employee_events
+    description: Typed, lossless staging view of source FactEmployeeEvents.
+    columns:
+      - name: employee_id
+        description: Source column EmployeeID.
+        data_tests:
+          - not_null
+      - name: event_date
+        description: Source column EventDate.
+        data_tests:
+          - not_null
+      - name: event_type
+        description: Source column EventType.
+        data_tests:
+          - not_null
+      - name: department_id
+        description: Source column DepartmentID.
+      - name: department
+        description: Source column Department.
+      - name: location_id
+        description: Source column LocationID.
+      - name: location
+        description: Source column Location.
+      - name: termination_type
+        description: Source column TerminationType.
+      - name: termination_reason
+        description: Source column TerminationReason.
+  - name: stg_fact_compensation
+    description: Typed, lossless staging view of source FactCompensation.
+    columns:
+      - name: employee_id
+        description: Source column EmployeeID.
+        data_tests:
+          - not_null
+      - name: effective_date
+        description: Source column EffectiveDate.
+        data_tests:
+          - not_null
+      - name: annual_salary
+        description: Source column AnnualSalary.
+      - name: level
+        description: Source column Level.
+      - name: currency
+        description: Source column Currency.
+  - name: stg_fact_performance
+    description: Typed, lossless staging view of source FactPerformance.
+    columns:
+      - name: employee_id
+        description: Source column EmployeeID.
+        data_tests:
+          - not_null
+      - name: review_date
+        description: Source column ReviewDate.
+        data_tests:
+          - not_null
+      - name: performance_rating
+        description: Source column PerformanceRating.
+      - name: review_type
+        description: Source column ReviewType.
+  - name: stg_fact_engagement
+    description: Typed, lossless staging view of source FactEngagement.
+    columns:
+      - name: employee_id
+        description: Source column EmployeeID.
+        data_tests:
+          - not_null
+      - name: survey_date
+        description: Source column SurveyDate.
+        data_tests:
+          - not_null
+      - name: engagement_score
+        description: Source column EngagementScore.
+      - name: response_rate_pct
+        description: Source column ResponseRatePct.
+  - name: stg_fact_absence
+    description: Typed, lossless staging view of source FactAbsence.
+    columns:
+      - name: employee_id
+        description: Source column EmployeeID.
+        data_tests:
+          - not_null
+      - name: absence_date
+        description: Source column AbsenceDate.
+        data_tests:
+          - not_null
+      - name: absence_type
+        description: Source column AbsenceType.
+        data_tests:
+          - not_null
+      - name: days_absent
+        description: Source column DaysAbsent.
+  - name: stg_fact_recruitment
+    description: Typed, lossless staging view of source FactRecruitment.
+    columns:
+      - name: req_id
+        description: Source column ReqID.
+      - name: month
+        description: Source column Month.
+        data_tests:
+          - not_null
+      - name: department_id
+        description: Source column DepartmentID.
+        data_tests:
+          - not_null
+      - name: department
+        description: Source column Department.
+      - name: open_requisitions
+        description: Source column OpenRequisitions.
+      - name: filled_requisitions
+        description: Source column FilledRequisitions.
+      - name: cancelled_requisitions
+        description: Source column CancelledRequisitions.
+      - name: avg_days_to_fill
+        description: Source column AvgDaysToFill.
+  - name: stg_workforce_targets
+    description: Typed, lossless staging view of source WorkforceTargets.
+    columns:
+      - name: month
+        description: Source column Month.
+        data_tests:
+          - not_null
+      - name: department_id
+        description: Source column DepartmentID.
+        data_tests:
+          - not_null
+      - name: department
+        description: Source column Department.
+      - name: planned_headcount
+        description: Source column PlannedHeadcount.
+      - name: budgeted_fte
+        description: Source column BudgetedFTE.
+      - name: budgeted_salary_cost
+        description: Source column BudgetedSalaryCost.
+      - name: planning_scenario
+        description: Source column PlanningScenario.
+  - name: stg_dim_department
+    description: Typed, lossless staging view of source DimDepartment.
+    columns:
+      - name: department_id
+        description: Source column DepartmentID.
+        data_tests:
+          - not_null
+          - unique
+      - name: department
+        description: Source column Department.
+      - name: function
+        description: Source column Function.
+      - name: cost_center
+        description: Source column CostCenter.
+  - name: stg_dim_location
+    description: Typed, lossless staging view of source DimLocation.
+    columns:
+      - name: location_id
+        description: Source column LocationID.
+        data_tests:
+          - not_null
+          - unique
+      - name: location
+        description: Source column Location.
+      - name: country
+        description: Source column Country.
+      - name: region
+        description: Source column Region.
+      - name: time_zone
+        description: Source column TimeZone.
+      - name: latitude
+        description: Source column Latitude.
+      - name: longitude
+        description: Source column Longitude.
+  - name: stg_dim_date
+    description: Typed, lossless staging view of source DimDate.
+    columns:
+      - name: date
+        description: Source column Date.
+        data_tests:
+          - not_null
+          - unique
+      - name: month
+        description: Source column Month.
+      - name: year
+        description: Source column Year.
+      - name: quarter
+        description: Source column Quarter.
+      - name: month_number
+        description: Source column MonthNumber.
+      - name: month_name
+        description: Source column MonthName.
+      - name: weekday_number
+        description: Source column WeekdayNumber.
