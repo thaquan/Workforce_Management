@@ -8,6 +8,7 @@
 2. [Python ingestion](02_ingestion.md): explicit 12-sheet schema contract, typed COPY, SHA-256, atomic full load, run logs.
 3. [Quality and idempotency](03_quality_and_idempotency.md): blocking rules, source REVIEW issues, repeat-run/rollback tests.
 4. [Verification checklist](../../reports/phase2/verification_checklist.md): observed pass/fail evidence and known limitations.
+5. [Code review and fixes](04_code_review_fixes.md): release risks, remediation and regression evidence.
 
 ## Quick start
 
@@ -18,7 +19,7 @@ docker compose up -d postgres
 python -m src.phase2.ingest
 ```
 
-The CLI returns `SUCCEEDED` on first/forced load or `SKIPPED` when an identical source has already been loaded and current raw counts match.
+The CLI returns `SUCCEEDED` on first/forced load or `SKIPPED` when an identical source has already been loaded and all raw row contents match. A post-commit report problem returns `SUCCEEDED` with `report_warning`.
 
 ## Raw source-to-warehouse contract for Phase 3
 

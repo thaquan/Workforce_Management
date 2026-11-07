@@ -81,7 +81,8 @@ def raw_table(sheet):
 
 def ensure_tables(cursor):
     for sheet, columns in SHEET_COLUMNS.items():
-        table = sql.Identifier("raw", raw_table(sheet))
+        name = raw_table(sheet)
+        table = sql.Identifier("raw", name)
         col_defs = [
             sql.SQL("{} {}{}").format(
                 sql.Identifier(snake_case(field)),
@@ -98,6 +99,44 @@ def ensure_tables(cursor):
                 table, sql.SQL(", ").join([*col_defs, primary_key])
             )
         )
+        # CREATE IF NOT EXISTS does not validate tables created by earlier versions.
+        actual_columns = cursor.execute(
+            """SELECT column_name, data_type, numeric_precision, numeric_scale, is_nullable
+                 FROM information_schema.columns
+                WHERE table_schema='raw' AND table_name=%s
+                ORDER BY ordinal_position""",
+            (name,),
+        ).fetchall()
+        expected_columns = []
+        for field in columns:
+            data_type = sql_type(field)
+            if data_type == "NUMERIC(20,6)":
+                expected_columns.append((snake_case(field), "numeric", 20, 6,
+                                         "NO" if field in BUSINESS_KEYS[sheet] else "YES"))
+            elif data_type == "INTEGER":
+                expected_columns.append((snake_case(field), "integer", 32, 0,
+                                         "NO" if field in BUSINESS_KEYS[sheet] else "YES"))
+            else:
+                expected_columns.append((snake_case(field), data_type.lower(),
+                                         None, None,
+                                         "NO" if field in BUSINESS_KEYS[sheet] else "YES"))
+        # PostgreSQL exposes NULL precision/scale for non-numeric columns.
+        if actual_columns != expected_columns:
+            raise RuntimeError(f"Schema drift detected in raw.{name}")
+        actual_key = cursor.execute(
+            """SELECT kcu.column_name
+                 FROM information_schema.table_constraints AS tc
+                 JOIN information_schema.key_column_usage AS kcu
+                   ON tc.constraint_name = kcu.constraint_name
+                  AND tc.table_schema = kcu.table_schema
+                  AND tc.table_name = kcu.table_name
+                WHERE tc.table_schema='raw'
+                  AND tc.table_name=%s AND tc.constraint_type='PRIMARY KEY'
+                ORDER BY kcu.ordinal_position""",
+            (name,),
+        ).fetchall()
+        if tuple(x[0] for x in actual_key) != tuple(snake_case(f) for f in BUSINESS_KEYS[sheet]):
+            raise RuntimeError(f"Primary key drift detected in raw.{name}")
 
 
 def load_rows(cursor, normalized, failure_hook=None):
@@ -118,7 +157,7 @@ def load_rows(cursor, normalized, failure_hook=None):
 
 
 def raw_tables_match(cursor, normalized):
-    """Do not skip a checksum if the current raw tables were removed or changed in size."""
+    """Compare full raw content, not only row counts, before skipping a batch."""
     for sheet, rows in normalized.items():
         name = raw_table(sheet)
         if cursor.execute("SELECT to_regclass(%s)", (f"raw.{name}",)).fetchone()[0] is None:
@@ -128,6 +167,22 @@ def raw_tables_match(cursor, normalized):
         ).fetchone()[0]
         if count != len(rows):
             return False
+        columns = SHEET_COLUMNS[sheet]
+        key_fields = BUSINESS_KEYS[sheet]
+        key_positions = tuple(columns.index(field) for field in key_fields)
+        query = sql.SQL("SELECT {} FROM {}").format(
+            sql.SQL(", ").join(sql.Identifier(snake_case(field)) for field in columns),
+            sql.Identifier("raw", name),
+        )
+        database_rows = cursor.execute(query).fetchall()
+        by_key = {tuple(row[i] for i in key_positions): row for row in database_rows}
+        if len(by_key) != len(rows):
+            return False
+        for record in rows:
+            key = tuple(record[field] for field in key_fields)
+            expected_values = tuple(record[field] for field in columns)
+            if by_key.get(key) != expected_values:
+                return False
     return True
 
 
@@ -187,6 +242,8 @@ def ingest(source=DEFAULT_SOURCE, force=False, failure_hook=None):
     normalized = {}
     try:
         workbook = load_workbook(source)
+        if file_sha256(source) != digest:
+            raise SourceValidationError("Source workbook changed while being read")
         normalized, checks = normalize_and_validate(workbook)
         expected = sum(len(rows) for rows in normalized.values())
         with connect_db() as conn, conn.transaction():
@@ -196,9 +253,8 @@ def ingest(source=DEFAULT_SOURCE, force=False, failure_hook=None):
                 """SELECT sf.sha256
                    FROM audit.load_batches b
                    JOIN audit.source_files sf ON sf.source_file_id=b.source_file_id
-                   WHERE b.status='SUCCEEDED' AND b.batch_id < %s
-                   ORDER BY b.batch_id DESC LIMIT 1""",
-                (batch_id,),
+                   WHERE b.status='SUCCEEDED'
+                   ORDER BY b.finished_at DESC, b.batch_id DESC LIMIT 1""",
             ).fetchone()
             if previous and previous[0] == digest and not force and raw_tables_match(conn, normalized):
                 conn.execute(
@@ -227,11 +283,17 @@ def ingest(source=DEFAULT_SOURCE, force=False, failure_hook=None):
                            finished_at=NOW(), error_message=NULL
                        WHERE batch_id=%s""", (expected, expected, batch_id)
                 )
-        write_public_report(batch_id, "SUCCEEDED", normalized, digest)
-        return {"batch_id": batch_id, "status": "SUCCEEDED", "rows": expected}
     except Exception as error:
         log_failed_batch(batch_id, error)
         raise
+    # Report writing happens after database commit; its failure must not rewrite
+    # a successful database load as FAILED in audit.load_batches.
+    result = {"batch_id": batch_id, "status": "SUCCEEDED", "rows": expected}
+    try:
+        write_public_report(batch_id, "SUCCEEDED", normalized, digest)
+    except Exception as error:
+        result["report_warning"] = type(error).__name__
+    return result
 
 
 def main():

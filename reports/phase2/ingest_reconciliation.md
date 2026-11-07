@@ -1,6 +1,6 @@
 # Phase 2 — Ingestion Reconciliation
 
-- Batch ID: 20
+- Batch ID: 32
 - Status: **SUCCEEDED**
 - Source checksum SHA-256: `d40a85095faabb4c18517a51c977747c57d7f248d952039ec442923ca5042626`
 - Expected row count: **29,728**

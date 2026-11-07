@@ -30,11 +30,12 @@ Remove-Item Env:HR_INTEGRATION_TESTS
 python -m src.phase2.ingest --force
 ```
 
-The integration suite tests all 12 table counts, repeated-load SKIPPED behavior, mid-COPY rollback, corrupt workbook audit, duplicate business keys and missing foreign keys.
+The integration suite tests all 12 table counts, repeated-load SKIPPED behavior, mid-COPY rollback, corrupt workbook audit, duplicate business keys, missing foreign keys, corrected-source replacement, same-row-count database tampering, report failure after commit, and source checksum changes during read.
 
 ## Limits
 
 - This is **full-snapshot batch ingestion**, not incremental CDC or streaming.
-- Row-count guards detect missing/extra rows, not manual content mutations that preserve counts.
+- Identical-source skip verifies both row counts and all raw column values; it repairs manual data mutations that preserve counts. This is intentional for the ~30k-row dataset, but may become expensive for much larger datasets.
+- Database audit and filesystem reporting are intentionally separate: a local report error is surfaced as a warning, not as a failed database load.
 - SQL raw schemas retain the source grain. dbt staging/marts, dimensional history and Power BI belong in Phase 3+.
 - Source license and any external publication of HR details still require confirmation.

@@ -1,6 +1,6 @@
 # Phase 2 — Local acceptance checklist
 
-Latest complete local smoke run: **batch 20, SUCCEEDED, 29,728 / 29,728 rows**. Offline suite: **22 passed, 7 integration tests intentionally skipped**. Live integration suite: **7 passed**; tested independently in Session 3. Audit quality results on final success: **19 PASS, 4 REVIEW**. The source workbook's SHA-256 matches the original file outside the repository.
+Phase 2 code review verified **2026-11-07**: latest successful load **batch 32**, 29,728/29,728 rows, followed by matching-source **batch 33 SKIPPED**. Offline suite: **23 passed, 10 integration tests skipped by default**. Live PostgreSQL integration suite: **10/10 passed**. Latest successful batch: **19 PASS / 4 REVIEW** quality checks. The local source Excel SHA-256 matched the original Excel outside the project directory.
 
 | Acceptance gate | Observed result | Status |
 |---|---|---|
@@ -12,6 +12,10 @@ Latest complete local smoke run: **batch 20, SUCCEEDED, 29,728 / 29,728 rows**. 
 | Total source rows loaded | 29,728 | PASS |
 | Source checksum | SHA-256 recorded in audit | PASS |
 | Repeating identical file | SKIPPED, unchanged row counts | PASS |
+| Database tampering with same row count | Full raw content comparison detects change and reloads | PASS |
+| Schema contract drift | PostgreSQL metadata checked against defined columns/types/PK | PASS |
+| Report I/O failure after commit | Audit remains SUCCEEDED; CLI emits report_warning | PASS |
+| Source mutation during parsing | Second SHA-256 detects mismatch; batch FAILED | PASS |
 | Mid-load failure | Transaction rollback, previous tables retained | PASS |
 | Corrupt workbook | FAILED batch and quality_result, no raw mutation | PASS |
 | Invalid business key / foreign key | Rejected by source contract | PASS |

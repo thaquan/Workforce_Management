@@ -37,9 +37,12 @@ python -m src.phase2.ingest --force
 - `audit.load_batches` stores RUNNING / SUCCEEDED / FAILED / SKIPPED, expected and loaded counts.
 - `audit.quality_results` records each source rule, including REVIEW flags for known limitations.
 - All 12 raw tables are loaded via `COPY` inside **one PostgreSQL transaction**. A failure rolls back all 12 tables.
-- Repeated identical checksums yield SKIPPED *only if current raw-table counts still match*; `--force` reprocesses.
+- Repeated identical checksums yield SKIPPED **only when all 12 raw tables match the source both by row count and by every column value**; `--force` reprocesses.
+- Existing raw table columns, types, nullability and primary keys are checked before replacing rows; schema drift blocks the load.
+- The source SHA-256 is recalculated after reading the workbook. If the file changed during the read, ingestion is rejected and audited.
 - A corrected workbook with a different checksum triggers full atomic replacement (not row-append).
 - Failed loads remain in audit, while previous valid raw data remains accessible.
+- The report file is written **after** the database transaction. Report I/O failure returns `report_warning` in the CLI result but cannot rewrite an already committed SUCCEEDED batch as FAILED.
 
 ## Privacy
 

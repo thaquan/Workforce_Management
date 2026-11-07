@@ -53,7 +53,9 @@ Smoke and regression commands are documented in `docs/phase2/01_environment_setu
 
 ## Phase 2 — Raw data ingestion (completed locally)
 
-Phase 2 now provides **12 typed PostgreSQL raw tables / 29,728 source records**, transactional full-snapshot loading, file SHA-256 audit, source validation, idempotent repeat runs, and rollback/recovery tests. See [Phase 2 handoff](docs/phase2/README.md).
+Phase 2 now provides **12 typed PostgreSQL raw tables / 29,728 source records**, transactional full-snapshot loading, file SHA-256 audit, source/schema validation, idempotent repeat runs with full content comparison, and rollback/recovery tests. See [Phase 2 handoff](docs/phase2/README.md).
+
+The [Phase 2 code review](docs/phase2/04_code_review_fixes.md) documents fixes for same-row-count data tampering, audit status after report failures, source checksum changes while reading, and existing-table schema drift.
 
 ```powershell
 python -m pip install -r requirements.txt

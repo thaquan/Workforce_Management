@@ -3,13 +3,14 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 from zipfile import BadZipFile, ZipFile
 import xml.etree.ElementTree as ET
 
 from psycopg import sql
 
 from src.phase1.phase1_profiler import load_workbook
-from src.phase2.ingest import DEFAULT_SOURCE, connect_db, ingest, raw_table
+from src.phase2.ingest import DEFAULT_SOURCE, connect_db, file_sha256, ingest, raw_table
 from src.phase2.quality import SourceValidationError, normalize_and_validate
 from src.phase2.schema_contract import SHEET_COLUMNS
 
@@ -134,6 +135,56 @@ class Phase2DatabaseTests(unittest.TestCase):
             finally:
                 # Restore the verified original regardless of the modified-source result.
                 ingest(source=DEFAULT_SOURCE, force=True)
+        self.assertEqual(self.read_counts(), before)
+
+    def test_08_modified_database_with_same_count_is_repaired(self):
+        before = self.read_counts()
+        with connect_db() as conn:
+            original_sum = conn.execute(
+                "SELECT SUM(budgeted_salary_cost) FROM raw.workforce_targets"
+            ).fetchone()[0]
+            with conn.transaction():
+                conn.execute(
+                    """UPDATE raw.workforce_targets SET budgeted_salary_cost = budgeted_salary_cost + 1
+                        WHERE ctid = (SELECT ctid FROM raw.workforce_targets LIMIT 1)"""
+                )
+        try:
+            repaired = ingest()
+            self.assertEqual(repaired["status"], "SUCCEEDED")
+            with connect_db() as conn:
+                repaired_sum = conn.execute(
+                    "SELECT SUM(budgeted_salary_cost) FROM raw.workforce_targets"
+                ).fetchone()[0]
+            self.assertEqual(repaired_sum, original_sum)
+            self.assertEqual(self.read_counts(), before)
+        finally:
+            ingest(force=True)
+
+    def test_09_report_failure_does_not_change_committed_audit_status(self):
+        before = self.read_counts()
+        with patch("src.phase2.ingest.write_public_report", side_effect=PermissionError("test")):
+            result = ingest(force=True)
+        self.assertEqual(result["status"], "SUCCEEDED")
+        self.assertEqual(result["report_warning"], "PermissionError")
+        with connect_db() as conn:
+            status = conn.execute(
+                "SELECT status FROM audit.load_batches WHERE batch_id=%s",
+                (result["batch_id"],)
+            ).fetchone()[0]
+        self.assertEqual(status, "SUCCEEDED")
+        self.assertEqual(self.read_counts(), before)
+
+    def test_10_source_checksum_change_during_read_is_rejected(self):
+        before = self.read_counts()
+        digest = file_sha256(DEFAULT_SOURCE)
+        with patch("src.phase2.ingest.file_sha256", side_effect=[digest, "0" * 64]):
+            with self.assertRaisesRegex(SourceValidationError, "changed while being read"):
+                ingest(force=True)
+        with connect_db() as conn:
+            status = conn.execute(
+                "SELECT status FROM audit.load_batches ORDER BY batch_id DESC LIMIT 1"
+            ).fetchone()[0]
+        self.assertEqual(status, "FAILED")
         self.assertEqual(self.read_counts(), before)
 
 
