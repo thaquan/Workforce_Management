@@ -1,4 +1,4 @@
-# HR Workforce Intelligence — Phase 1
+# HR Workforce Intelligence — Phases 1 & 2
 
 End-to-End HR Workforce Planning & Attrition Analytics portfolio project.
 
@@ -42,3 +42,24 @@ python src/phase1/run_phase1.py
 ```
 
 This runs both profiling scripts and six automated regression tests (Python standard library only). Published aggregate reports are in `reports/phase1/`. Source workbook and derived employee-level files remain excluded from Git.
+
+## Phase 2 — PostgreSQL foundation (Session 1)
+
+The local PostgreSQL infrastructure is defined in [`compose.yaml`](compose.yaml), with the idempotent [SQL bootstrap](sql/00_bootstrap.sql) and [setup instructions](docs/phase2/01_environment_setup.md).
+
+Run `docker compose up -d postgres` after configuring a private `.env`. The service binds only to `127.0.0.1:5433`. Phase 2 session 1 creates schemas and audit tables; it does **not** load HR employee rows.
+
+Smoke and regression commands are documented in `docs/phase2/01_environment_setup.md`. The multi-session task plan and Agent Verification handoffs are stored outside the repository at `D:\\codex-free-master\\TASK_PROCESS\\FirstTask`.
+
+## Phase 2 — Raw data ingestion (completed locally)
+
+Phase 2 now provides **12 typed PostgreSQL raw tables / 29,728 source records**, transactional full-snapshot loading, file SHA-256 audit, source validation, idempotent repeat runs, and rollback/recovery tests. See [Phase 2 handoff](docs/phase2/README.md).
+
+```powershell
+python -m pip install -r requirements.txt
+docker compose up -d postgres
+python -m src.phase2.ingest
+python -m unittest discover -s tests -p "test_*.py" -v
+```
+
+Use `$env:HR_INTEGRATION_TESTS="1"` to enable live database tests. Raw HR data, local credentials and generated employee-level artifacts remain excluded from Git. Known source limitations from Phase 1 are still visible; no raw data was rewritten to hide them.
