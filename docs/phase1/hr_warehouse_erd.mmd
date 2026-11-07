@@ -1,0 +1,49 @@
+erDiagram
+    DIM_DATE ||--o{ FCT_WORKFORCE_SNAPSHOT : "month"
+    DIM_DEPARTMENT ||--o{ FCT_WORKFORCE_SNAPSHOT : "department"
+    DIM_LOCATION ||--o{ FCT_WORKFORCE_SNAPSHOT : "location"
+    DIM_LEVEL ||--o{ FCT_WORKFORCE_SNAPSHOT : "level"
+    DIM_EMPLOYEE ||--o{ FCT_EMPLOYEE_EVENTS : "employee"
+    DIM_DATE ||--o{ FCT_EMPLOYEE_EVENTS : "event_date"
+    DIM_DEPARTMENT ||--o{ FCT_EMPLOYEE_EVENTS : "event_department"
+    DIM_LOCATION ||--o{ FCT_EMPLOYEE_EVENTS : "event_location"
+    DIM_EMPLOYEE ||--o{ FCT_COMPENSATION : "employee"
+    DIM_EMPLOYEE ||--o{ FCT_ENGAGEMENT : "employee"
+    DIM_EMPLOYEE ||--o{ FCT_PERFORMANCE : "employee"
+    DIM_EMPLOYEE ||--o{ FCT_ABSENCE : "employee"
+    DIM_DEPARTMENT ||--o{ FCT_RECRUITMENT_MONTHLY : "department"
+    DIM_DEPARTMENT ||--o{ FCT_WORKFORCE_TARGETS : "department"
+    DIM_DATE ||--o{ FCT_RECRUITMENT_MONTHLY : "month"
+    DIM_DATE ||--o{ FCT_WORKFORCE_TARGETS : "month"
+    DIM_EMPLOYEE { string EmployeeID PK }
+    DIM_DATE { date DateKey PK }
+    DIM_DEPARTMENT { string DepartmentID PK }
+    DIM_LOCATION { string LocationID PK }
+    DIM_LEVEL { string Level PK }
+    FCT_WORKFORCE_SNAPSHOT { date Month FK
+        string DepartmentID FK
+        string LocationID FK
+        string Level FK
+        int Headcount
+        float FTE }
+    FCT_EMPLOYEE_EVENTS { string EmployeeID FK
+        date EventDate FK
+        string EventType }
+    FCT_COMPENSATION { string EmployeeID FK
+        date EffectiveDate
+        float AnnualSalary }
+    FCT_ENGAGEMENT { string EmployeeID FK
+        date SurveyDate
+        int EngagementScore }
+    FCT_PERFORMANCE { string EmployeeID FK
+        date ReviewDate
+        int PerformanceRating }
+    FCT_ABSENCE { string EmployeeID FK
+        date AbsenceDate
+        float DaysAbsent }
+    FCT_RECRUITMENT_MONTHLY { date Month FK
+        string DepartmentID FK
+        int FilledRequisitions }
+    FCT_WORKFORCE_TARGETS { date Month FK
+        string DepartmentID FK
+        int PlannedHeadcount }

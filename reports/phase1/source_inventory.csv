@@ -1,0 +1,13 @@
+﻿sheet,rows,columns,full_row_duplicates
+DimEmployee,1200,19,0
+FactMonthlySnapshot,6826,9,0
+FactEmployeeEvents,1406,9,0
+FactCompensation,2914,5,0
+FactPerformance,2741,4,0
+FactEngagement,10200,4,0
+FactAbsence,2755,4,0
+FactRecruitment,288,8,0
+WorkforceTargets,288,7,0
+DimDepartment,8,4,0
+DimLocation,6,7,0
+DimDate,1096,7,0

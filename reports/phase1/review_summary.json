@@ -1,0 +1,30 @@
+{
+  "monthly_periods": 36,
+  "months_with_hc_mismatch": 33,
+  "june_2025_hc_difference": 98,
+  "june_2025_terminations": 98,
+  "july_2025_hc_difference": 1,
+  "june_restructuring_departments": [
+    "D002",
+    "D003",
+    "D004",
+    "D005"
+  ],
+  "july_plan_reset_departments": [
+    "D002",
+    "D003",
+    "D004",
+    "D005"
+  ],
+  "extended_calendar_start": "2018-01-05",
+  "extended_calendar_end": "2025-12-31",
+  "extended_calendar_days": 2918,
+  "compensation_currency": [
+    "EUR"
+  ],
+  "salary_budget_unit_verified": false,
+  "event_types": {
+    "Hire": 1200,
+    "Termination": 206
+  }
+}

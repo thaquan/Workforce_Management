@@ -1,0 +1,9 @@
+﻿department_id,june_snapshot_hc,june_asof_profile_hc,june_hc_difference,june_terminations,july_plan_reset
+D001,323,323,0,0,NO
+D002,212,170,42,42,YES
+D003,154,129,25,25,YES
+D004,105,86,19,19,YES
+D005,91,79,12,12,YES
+D006,35,35,0,0,NO
+D007,52,52,0,0,NO
+D008,49,49,0,0,NO

@@ -1,0 +1,44 @@
+﻿check_id,status,affected_count_or_value,details
+duplicates_DimEmployee,PASS,0,Duplicate full rows
+duplicates_FactMonthlySnapshot,PASS,0,Duplicate full rows
+duplicates_FactEmployeeEvents,PASS,0,Duplicate full rows
+duplicates_FactCompensation,PASS,0,Duplicate full rows
+duplicates_FactPerformance,PASS,0,Duplicate full rows
+duplicates_FactEngagement,PASS,0,Duplicate full rows
+duplicates_FactAbsence,PASS,0,Duplicate full rows
+duplicates_FactRecruitment,PASS,0,Duplicate full rows
+duplicates_WorkforceTargets,PASS,0,Duplicate full rows
+duplicates_DimDepartment,PASS,0,Duplicate full rows
+duplicates_DimLocation,PASS,0,Duplicate full rows
+duplicates_DimDate,PASS,0,Duplicate full rows
+key_DimEmployee,PASS,0,Logical key = EmployeeID
+key_DimDepartment,PASS,0,Logical key = DepartmentID
+key_DimLocation,PASS,0,Logical key = LocationID
+key_DimDate,PASS,0,Logical key = Date
+key_FactMonthlySnapshot,PASS,0,Logical key = Month+DepartmentID+LocationID+Level
+key_FactEmployeeEvents,PASS,0,Logical key = EmployeeID+EventDate+EventType
+key_FactCompensation,PASS,0,Logical key = EmployeeID+EffectiveDate
+key_FactPerformance,PASS,0,Logical key = EmployeeID+ReviewDate
+key_FactEngagement,PASS,0,Logical key = EmployeeID+SurveyDate
+key_FactAbsence,PASS,0,Logical key = EmployeeID+AbsenceDate+AbsenceType
+key_FactRecruitment,PASS,0,Logical key = Month+DepartmentID
+key_WorkforceTargets,PASS,0,Logical key = Month+DepartmentID
+fk_FactEmployeeEvents_EmployeeID,PASS,0,DimEmployee.EmployeeID
+fk_FactCompensation_EmployeeID,PASS,0,DimEmployee.EmployeeID
+fk_FactPerformance_EmployeeID,PASS,0,DimEmployee.EmployeeID
+fk_FactEngagement_EmployeeID,PASS,0,DimEmployee.EmployeeID
+fk_FactAbsence_EmployeeID,PASS,0,DimEmployee.EmployeeID
+fk_DimEmployee_DepartmentID,PASS,0,DimDepartment.DepartmentID
+fk_FactMonthlySnapshot_DepartmentID,PASS,0,DimDepartment.DepartmentID
+fk_FactEmployeeEvents_DepartmentID,PASS,0,DimDepartment.DepartmentID
+fk_FactRecruitment_DepartmentID,PASS,0,DimDepartment.DepartmentID
+fk_WorkforceTargets_DepartmentID,PASS,0,DimDepartment.DepartmentID
+fk_DimEmployee_LocationID,PASS,0,DimLocation.LocationID
+fk_FactMonthlySnapshot_LocationID,PASS,0,DimLocation.LocationID
+fk_FactEmployeeEvents_LocationID,PASS,0,DimLocation.LocationID
+employee_events_dates,PASS,0,Hire/Termination matches DimEmployee
+snapshot_fte,PASS,0,0 <= FTE <= Headcount
+active_vs_last_snapshot,REVIEW,5,Not necessarily same effective date/source grain
+dimdate_historical_coverage,REVIEW,2023-01-01,Earliest event 2018-01-05 is outside DimDate
+salary_budget_units,REVIEW,unverified,AnnualSalary vs BudgetedSalaryCost units/timeframe must match
+no_transfer_events,REVIEW,"Hire,Termination",Only Hire/Termination events; no Transfer

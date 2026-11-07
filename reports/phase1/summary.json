@@ -1,0 +1,35 @@
+{
+  "source": "data/raw/HR_Workforce_Planning_Attrition_Dataset.xlsx",
+  "tables": 12,
+  "rows": 29728,
+  "active_employees": 994,
+  "terminated_employees": 206,
+  "event_types": {
+    "Hire": 1200,
+    "Termination": 206
+  },
+  "first_month": "2023-01-01",
+  "last_month": "2025-12-01",
+  "first_actual": {
+    "Headcount": 622,
+    "FTE": 601.0
+  },
+  "last_actual": {
+    "Headcount": 999,
+    "FTE": 968.6
+  },
+  "first_target": {
+    "PlannedHeadcount": 989,
+    "BudgetedFTE": 965.0,
+    "BudgetedSalaryCost": 64421000
+  },
+  "last_target": {
+    "PlannedHeadcount": 1079,
+    "BudgetedFTE": 1053.8,
+    "BudgetedSalaryCost": 70791000
+  },
+  "quality_check_status": {
+    "PASS": 39,
+    "REVIEW": 4
+  }
+}
