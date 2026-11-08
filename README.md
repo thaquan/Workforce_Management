@@ -87,3 +87,25 @@ python -m src.phase3.dbt_runner docs generate
 Power BI reporting is a future phase. The source snapshot discrepancy remains
 explicitly flagged; salary-budget variance and internal mobility are not
 represented as validated KPIs.
+
+## Phase 4 — Quality Gates, Monitoring and Synthetic CI
+
+Phase 4 adds [18 quality checks](src/phase4/quality_contract.py),
+an audited [end-to-end pipeline runner](src/phase4/pipeline.py),
+[PostgreSQL monitoring DDL](sql/04_monitoring.sql),
+an isolated [synthetic CI fixture](src/phase4/synthetic_fixture.py),
+and [GitHub Actions workflow](.github/workflows/quality-ci.yml).
+
+See [Phase 4 documentation](docs/phase4/README.md) and
+[acceptance evidence](reports/phase4/acceptance_report.md). Local full-run
+tests verify 36 dbt models plus 83 data tests; the synthetic CI verifies
+36 models plus 80 non-baseline tests without using HR employee data.
+
+```powershell
+python -m src.phase4.pipeline
+python -m src.phase4.health
+python -m src.phase4.pipeline --quality-only
+```
+
+The four known data-quality REVIEW cases are retained. This local
+monitoring layer does not schedule jobs or send automatic alerts.

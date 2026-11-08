@@ -1,3 +1,4 @@
+{{ config(tags=['full_baseline']) }}
 -- Dataset-specific baseline regressions; edits require review, not silent correction.
 with checks as (
     select 'expected 36 reporting months' as problem

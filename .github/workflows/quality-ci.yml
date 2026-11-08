@@ -1,0 +1,59 @@
+name: Quality Gates (Synthetic CI)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  offline-and-synthetic-db:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: hr_etl
+          POSTGRES_PASSWORD: synthetic_ci_only_password
+          POSTGRES_DB: workforce_ci
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U hr_etl -d workforce_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      POSTGRES_HOST: "127.0.0.1"
+      POSTGRES_PORT: "5433"
+      POSTGRES_DB: workforce_ci
+      POSTGRES_USER: hr_etl
+      POSTGRES_PASSWORD: synthetic_ci_only_password
+      HR_SYNTHETIC_DB: "YES"
+      HR_PHASE4_ISOLATED_TESTS: "YES"
+    steps:
+      - name: Checkout tracked code only (no real employee data)
+        uses: actions/checkout@v4
+      - name: Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dbt.txt
+      - name: Install pinned tools
+        run: python -m pip install -r requirements.txt -r requirements-dbt.txt
+      - name: Static source, contract and safety checks
+        run: |
+          python -m unittest discover -s tests -p 'test_phase2_idempotency.py' -v
+          python -m unittest discover -s tests -p 'test_phase2_ingest.py' -v
+          python -m unittest discover -s tests -p 'test_phase3_modeling.py' -v
+          python -m unittest discover -s tests -p 'test_phase4_quality.py' -v
+      - name: Create isolated synthetic source tables
+        run: python -m src.phase4.synthetic_fixture
+      - name: Build dbt models and generic tests (exclude real workbook baselines)
+        run: python -m src.phase3.dbt_runner build --exclude tag:full_baseline
+      - name: Persist and enforce Phase 4 quality gates
+        run: python -m src.phase4.pipeline --quality-only
+      - name: Isolated corruption and recovery regression
+        run: python -m unittest discover -s tests -p 'test_phase4_recovery.py' -v
+      - name: Generate dbt lineage docs
+        run: python -m src.phase3.dbt_runner docs generate

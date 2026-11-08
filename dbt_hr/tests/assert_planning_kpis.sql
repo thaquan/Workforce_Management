@@ -1,3 +1,4 @@
+{{ config(tags=['full_baseline']) }}
 -- Planning facts must not be multiplied by snapshot Location/Level granularity.
 with checks as (
     select 'planning row count' as problem

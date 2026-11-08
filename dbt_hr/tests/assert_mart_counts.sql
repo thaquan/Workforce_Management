@@ -1,3 +1,4 @@
+{{ config(tags=['full_baseline']) }}
 -- Catch row loss, fanout or unexpected changes to the verified baseline.
 with checks as (
     select 'workforce month/location/level fact count' as problem
