@@ -36,8 +36,13 @@ definitions and aggregate evidence, never employee-level rows.
 ## Interpretation
 
 Technical Phase 4 gates are passing locally, including failure/recovery
-behavior in an isolated database. **Hosted GitHub Actions execution is not
-asserted here** until confirmed separately in the Actions UI/API.
+behavior in an isolated database. **GitHub-hosted CI remains BLOCKED by an
+account billing restriction**, not a failed test. Hosted workflow run
+[`42498193385`](https://github.com/thaquan/Workforce_Management/actions/runs/42498193385)
+failed before a runner was allocated. The GitHub check-run annotation states:
+“The job was not started because your account is locked due to a billing issue.”
+GitHub Actions will need to be rerun after the account owner resolves billing.
+Do not interpret the local synthetic success as a hosted CI PASS.
 
 Open business questions remain unchanged: 33 historical headcount
 discrepancies, salary-budget units, and missing transfer history.

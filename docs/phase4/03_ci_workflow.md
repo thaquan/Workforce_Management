@@ -59,3 +59,12 @@ Hosted GitHub Actions' result should be checked in the repository's
 **Actions** tab after each push. Local synthetic CI rehearsal proves the
 workflow's commands are runnable but does not, on its own, prove a hosted
 GitHub runner completed successfully.
+
+### Current hosted blocker
+
+The first hosted run (`42498193385`) reported **failure before runner startup**
+with the check-run annotation: “The job was not started because your account
+is locked due to a billing issue.” This is an account-level GitHub Actions
+restriction, not evidence of dbt or test code failing. The repository owner
+must review their GitHub billing/payment status and unblock Actions before
+rerunning the workflow. This repository cannot resolve account billing.
