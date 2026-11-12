@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "98a3149b9b8703aa91c7",
   "position": {
     "x": 299,
@@ -11,6 +11,47 @@
   },
   "visual": {
     "visualType": "clusteredBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Department"
+                    }
+                  },
+                  "Property": "department"
+                }
+              },
+              "queryRef": "Dim Department.department",
+              "nativeQueryRef": "department",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Headcount Gap"
+                }
+              },
+              "queryRef": "_Measures.Headcount Gap",
+              "nativeQueryRef": "Headcount Gap"
+            }
+          ]
+        }
+      }
+    },
     "objects": {
       "categoryAxis": [
         {
@@ -91,46 +132,6 @@
           }
         }
       ]
-    },
-    "query": {
-      "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Department"
-                    }
-                  },
-                  "Property": "department"
-                }
-              },
-              "queryRef": "Dim Department.department",
-              "nativeQueryRef": "department"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Headcount Gap"
-                }
-              },
-              "queryRef": "_Measures.Headcount Gap",
-              "nativeQueryRef": "Headcount Gap"
-            }
-          ]
-        }
-      }
     }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "a4dc5230b17d532a49c6",
   "position": {
     "x": 916,
@@ -11,6 +11,79 @@
   },
   "visual": {
     "visualType": "hundredPercentStackedBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Department"
+                    }
+                  },
+                  "Property": "department"
+                }
+              },
+              "queryRef": "Dim Department.department",
+              "nativeQueryRef": "department",
+              "active": true
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Terminations"
+                }
+              },
+              "queryRef": "_Measures.Terminations",
+              "nativeQueryRef": "Terminations"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Voluntary Terminations"
+                }
+              },
+              "queryRef": "_Measures.Voluntary Terminations",
+              "nativeQueryRef": "Voluntary Terminations"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Involuntary Terminations"
+                }
+              },
+              "queryRef": "_Measures.Involuntary Terminations",
+              "nativeQueryRef": "Involuntary Terminations"
+            }
+          ]
+        }
+      }
+    },
     "objects": {
       "categoryAxis": [
         {
@@ -78,78 +151,6 @@
           }
         }
       ]
-    },
-    "query": {
-      "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Department"
-                    }
-                  },
-                  "Property": "department"
-                }
-              },
-              "queryRef": "Dim Department.department",
-              "nativeQueryRef": "department"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Voluntary Terminations"
-                }
-              },
-              "queryRef": "_Measures.Voluntary Terminations",
-              "nativeQueryRef": "Voluntary Terminations"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Involuntary Terminations"
-                }
-              },
-              "queryRef": "_Measures.Involuntary Terminations",
-              "nativeQueryRef": "Involuntary Terminations"
-            }
-          ]
-        },
-        "Tooltips": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Terminations"
-                }
-              },
-              "queryRef": "_Measures.Terminations",
-              "nativeQueryRef": "Terminations"
-            }
-          ]
-        }
-      }
     }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "03df3fe23a0fed705daf",
   "position": {
     "x": 942,
@@ -11,6 +11,79 @@
   },
   "visual": {
     "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact Retention"
+                    }
+                  },
+                  "Property": "exited"
+                }
+              },
+              "queryRef": "Fact Retention.exited",
+              "nativeQueryRef": "exited",
+              "active": true
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Observed Employees"
+                }
+              },
+              "queryRef": "_Measures.Observed Employees",
+              "nativeQueryRef": "Observed Employees"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Average Engagement Score"
+                }
+              },
+              "queryRef": "_Measures.Average Engagement Score",
+              "nativeQueryRef": "Average Engagement Score"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Average Performance Rating"
+                }
+              },
+              "queryRef": "_Measures.Average Performance Rating",
+              "nativeQueryRef": "Average Performance Rating"
+            }
+          ]
+        }
+      }
+    },
     "objects": {
       "categoryAxis": [
         {
@@ -77,78 +150,6 @@
           }
         }
       ]
-    },
-    "query": {
-      "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Fact Retention"
-                    }
-                  },
-                  "Property": "exited"
-                }
-              },
-              "queryRef": "Fact Retention.exited",
-              "nativeQueryRef": "exited"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Average Engagement Score"
-                }
-              },
-              "queryRef": "_Measures.Average Engagement Score",
-              "nativeQueryRef": "Average Engagement Score"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Average Performance Rating"
-                }
-              },
-              "queryRef": "_Measures.Average Performance Rating",
-              "nativeQueryRef": "Average Performance Rating"
-            }
-          ]
-        },
-        "Tooltips": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Observed Employees"
-                }
-              },
-              "queryRef": "_Measures.Observed Employees",
-              "nativeQueryRef": "Observed Employees"
-            }
-          ]
-        }
-      }
     }
   }
 }

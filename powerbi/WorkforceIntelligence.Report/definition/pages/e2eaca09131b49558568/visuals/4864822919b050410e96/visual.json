@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "4864822919b050410e96",
   "position": {
     "x": 755,
@@ -11,28 +11,6 @@
   },
   "visual": {
     "visualType": "pivotTable",
-    "objects": {
-      "columnHeaders": [
-        {
-          "properties": {
-            "columnAdjustment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'growToFit'"
-                }
-              }
-            },
-            "autoSizeColumnWidth": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ]
-    },
     "query": {
       "queryState": {
         "Rows": {
@@ -49,7 +27,8 @@
                 }
               },
               "queryRef": "Dim Department.department",
-              "nativeQueryRef": "department"
+              "nativeQueryRef": "department",
+              "active": true
             }
           ]
         },
@@ -100,6 +79,28 @@
           ]
         }
       }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            },
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

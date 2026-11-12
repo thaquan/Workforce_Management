@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "276ba50bc9ff227bcf85",
   "position": {
     "x": 298,
@@ -11,6 +11,102 @@
   },
   "visual": {
     "visualType": "scatterChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Department"
+                    }
+                  },
+                  "Property": "department"
+                }
+              },
+              "queryRef": "Dim Department.department",
+              "nativeQueryRef": "department",
+              "active": true
+            }
+          ]
+        },
+        "Size": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Observed Employees"
+                }
+              },
+              "queryRef": "_Measures.Observed Employees",
+              "nativeQueryRef": "Observed Employees"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Average Prior 365d Absence Days"
+                }
+              },
+              "queryRef": "_Measures.Average Prior 365d Absence Days",
+              "nativeQueryRef": "Average Prior 365d Absence Days"
+            }
+          ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Average Engagement Score"
+                }
+              },
+              "queryRef": "_Measures.Average Engagement Score",
+              "nativeQueryRef": "Average Engagement Score",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Average Performance Rating"
+                }
+              },
+              "queryRef": "_Measures.Average Performance Rating",
+              "nativeQueryRef": "Average Performance Rating"
+            }
+          ]
+        }
+      }
+    },
     "objects": {
       "categoryLabels": [
         {
@@ -91,100 +187,6 @@
           }
         }
       ]
-    },
-    "query": {
-      "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Department"
-                    }
-                  },
-                  "Property": "department"
-                }
-              },
-              "queryRef": "Dim Department.department",
-              "nativeQueryRef": "department"
-            }
-          ]
-        },
-        "X": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Average Engagement Score"
-                }
-              },
-              "queryRef": "_Measures.Average Engagement Score",
-              "nativeQueryRef": "Average Engagement Score"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Average Performance Rating"
-                }
-              },
-              "queryRef": "_Measures.Average Performance Rating",
-              "nativeQueryRef": "Average Performance Rating"
-            }
-          ]
-        },
-        "Size": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Observed Employees"
-                }
-              },
-              "queryRef": "_Measures.Observed Employees",
-              "nativeQueryRef": "Observed Employees"
-            }
-          ]
-        },
-        "Tooltips": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Average Prior 365d Absence Days"
-                }
-              },
-              "queryRef": "_Measures.Average Prior 365d Absence Days",
-              "nativeQueryRef": "Average Prior 365d Absence Days"
-            }
-          ]
-        }
-      }
     }
   }
 }

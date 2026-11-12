@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "f28ae51e1bf2b983737a",
   "position": {
     "x": 941,
@@ -11,6 +11,102 @@
   },
   "visual": {
     "visualType": "scatterChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Department"
+                    }
+                  },
+                  "Property": "department"
+                }
+              },
+              "queryRef": "Dim Department.department",
+              "nativeQueryRef": "department",
+              "active": true
+            }
+          ]
+        },
+        "Size": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Ending Open Requisitions"
+                }
+              },
+              "queryRef": "_Measures.Ending Open Requisitions",
+              "nativeQueryRef": "Ending Open Requisitions"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Cancelled Requisitions"
+                }
+              },
+              "queryRef": "_Measures.Cancelled Requisitions",
+              "nativeQueryRef": "Cancelled Requisitions"
+            }
+          ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Weighted Days to Fill"
+                }
+              },
+              "queryRef": "_Measures.Weighted Days to Fill",
+              "nativeQueryRef": "Weighted Days to Fill",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Filled Requisitions"
+                }
+              },
+              "queryRef": "_Measures.Filled Requisitions",
+              "nativeQueryRef": "Filled Requisitions"
+            }
+          ]
+        }
+      }
+    },
     "objects": {
       "categoryLabels": [
         {
@@ -91,100 +187,6 @@
           }
         }
       ]
-    },
-    "query": {
-      "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Department"
-                    }
-                  },
-                  "Property": "department"
-                }
-              },
-              "queryRef": "Dim Department.department",
-              "nativeQueryRef": "department"
-            }
-          ]
-        },
-        "X": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Weighted Days to Fill"
-                }
-              },
-              "queryRef": "_Measures.Weighted Days to Fill",
-              "nativeQueryRef": "Weighted Days to Fill"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Filled Requisitions"
-                }
-              },
-              "queryRef": "_Measures.Filled Requisitions",
-              "nativeQueryRef": "Filled Requisitions"
-            }
-          ]
-        },
-        "Size": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Ending Open Requisitions"
-                }
-              },
-              "queryRef": "_Measures.Ending Open Requisitions",
-              "nativeQueryRef": "Ending Open Requisitions"
-            }
-          ]
-        },
-        "Tooltips": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Cancelled Requisitions"
-                }
-              },
-              "queryRef": "_Measures.Cancelled Requisitions",
-              "nativeQueryRef": "Cancelled Requisitions"
-            }
-          ]
-        }
-      }
     }
   }
 }

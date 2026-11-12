@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "6af99bbe0470e55809b8",
   "position": {
     "x": 298,
@@ -11,6 +11,73 @@
   },
   "visual": {
     "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Pipeline Runs"
+                    }
+                  },
+                  "Property": "pipeline_run_id"
+                }
+              },
+              "queryRef": "Pipeline Runs.pipeline_run_id",
+              "nativeQueryRef": "Run"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Pipeline Runs"
+                    }
+                  },
+                  "Property": "status"
+                }
+              },
+              "queryRef": "Pipeline Runs.status",
+              "nativeQueryRef": "Status"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Pipeline Runs"
+                    }
+                  },
+                  "Property": "finished_at"
+                }
+              },
+              "queryRef": "Pipeline Runs.finished_at",
+              "nativeQueryRef": "Finished"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Pipeline Runs"
+                  }
+                },
+                "Property": "pipeline_run_id"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
     "objects": {
       "columnHeaders": [
         {
@@ -142,74 +209,6 @@
           }
         }
       ]
-    },
-    "query": {
-      "queryState": {
-        "Values": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Pipeline Runs"
-                    }
-                  },
-                  "Property": "pipeline_run_id"
-                }
-              },
-              "queryRef": "Pipeline Runs.pipeline_run_id",
-              "nativeQueryRef": "Run"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Pipeline Runs"
-                    }
-                  },
-                  "Property": "status"
-                }
-              },
-              "queryRef": "Pipeline Runs.status",
-              "nativeQueryRef": "Status"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Pipeline Runs"
-                    }
-                  },
-                  "Property": "finished_at"
-                }
-              },
-              "queryRef": "Pipeline Runs.finished_at",
-              "nativeQueryRef": "Finished"
-            }
-          ]
-        }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Pipeline Runs"
-                  }
-                },
-                "Property": "pipeline_run_id"
-              }
-            },
-            "direction": "Descending"
-          }
-        ],
-        "isDefaultSort": false
-      }
     }
   }
 }

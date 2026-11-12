@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "61ba45dbb355ccdfe443",
   "position": {
     "x": 298,
@@ -11,6 +11,79 @@
   },
   "visual": {
     "visualType": "stackedAreaChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Month"
+                    }
+                  },
+                  "Property": "month"
+                }
+              },
+              "queryRef": "Dim Month.month",
+              "nativeQueryRef": "month",
+              "active": true
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Fill Share of Closed Requisitions"
+                }
+              },
+              "queryRef": "_Measures.Fill Share of Closed Requisitions",
+              "nativeQueryRef": "Fill Share of Closed Requisitions"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Filled Requisitions"
+                }
+              },
+              "queryRef": "_Measures.Filled Requisitions",
+              "nativeQueryRef": "Filled Requisitions"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Cancelled Requisitions"
+                }
+              },
+              "queryRef": "_Measures.Cancelled Requisitions",
+              "nativeQueryRef": "Cancelled Requisitions"
+            }
+          ]
+        }
+      }
+    },
     "visualContainerObjects": {
       "background": [
         {
@@ -49,78 +122,6 @@
           }
         }
       ]
-    },
-    "query": {
-      "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Month"
-                    }
-                  },
-                  "Property": "month"
-                }
-              },
-              "queryRef": "Dim Month.month",
-              "nativeQueryRef": "month"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Filled Requisitions"
-                }
-              },
-              "queryRef": "_Measures.Filled Requisitions",
-              "nativeQueryRef": "Filled Requisitions"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Cancelled Requisitions"
-                }
-              },
-              "queryRef": "_Measures.Cancelled Requisitions",
-              "nativeQueryRef": "Cancelled Requisitions"
-            }
-          ]
-        },
-        "Tooltips": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Fill Share of Closed Requisitions"
-                }
-              },
-              "queryRef": "_Measures.Fill Share of Closed Requisitions",
-              "nativeQueryRef": "Fill Share of Closed Requisitions"
-            }
-          ]
-        }
-      }
     }
   }
 }

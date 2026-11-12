@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "76852675df20ebfad8a7",
   "position": {
     "x": 298,
@@ -11,6 +11,61 @@
   },
   "visual": {
     "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Month"
+                    }
+                  },
+                  "Property": "month"
+                }
+              },
+              "queryRef": "Dim Month.month",
+              "nativeQueryRef": "month",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Ending Headcount"
+                }
+              },
+              "queryRef": "_Measures.Ending Headcount",
+              "nativeQueryRef": "Ending Headcount"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Planned Headcount"
+                }
+              },
+              "queryRef": "_Measures.Planned Headcount",
+              "nativeQueryRef": "Planned Headcount"
+            }
+          ]
+        }
+      }
+    },
     "visualContainerObjects": {
       "background": [
         {
@@ -62,60 +117,6 @@
           }
         }
       ]
-    },
-    "query": {
-      "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim Month"
-                    }
-                  },
-                  "Property": "month"
-                }
-              },
-              "queryRef": "Dim Month.month",
-              "nativeQueryRef": "month"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Ending Headcount"
-                }
-              },
-              "queryRef": "_Measures.Ending Headcount",
-              "nativeQueryRef": "Ending Headcount"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Planned Headcount"
-                }
-              },
-              "queryRef": "_Measures.Planned Headcount",
-              "nativeQueryRef": "Planned Headcount"
-            }
-          ]
-        }
-      }
     }
   }
 }

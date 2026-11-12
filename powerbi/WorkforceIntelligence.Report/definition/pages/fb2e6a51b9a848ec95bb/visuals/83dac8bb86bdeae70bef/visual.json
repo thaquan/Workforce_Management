@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "83dac8bb86bdeae70bef",
   "position": {
     "x": 1010,
@@ -11,6 +11,29 @@
   },
   "visual": {
     "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Pipeline Runs"
+                    }
+                  },
+                  "Property": "pipeline_run_id"
+                }
+              },
+              "queryRef": "Pipeline Runs.pipeline_run_id",
+              "nativeQueryRef": "pipeline_run_id",
+              "active": true
+            }
+          ]
+        }
+      }
+    },
     "objects": {
       "data": [
         {
@@ -81,28 +104,6 @@
           }
         }
       ]
-    },
-    "query": {
-      "queryState": {
-        "Values": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Pipeline Runs"
-                    }
-                  },
-                  "Property": "pipeline_run_id"
-                }
-              },
-              "queryRef": "Pipeline Runs.pipeline_run_id",
-              "nativeQueryRef": "pipeline_run_id"
-            }
-          ]
-        }
-      }
     }
   }
 }
