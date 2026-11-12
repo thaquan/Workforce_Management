@@ -1,4 +1,4 @@
-# Phase 2 — Ingestion handoff
+# Phase 2 — PostgreSQL ingestion
 
 **Status:** Implemented and tested locally. Raw Excel remains immutable and excluded from Git.
 

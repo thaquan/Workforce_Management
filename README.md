@@ -62,7 +62,7 @@ The local production-like pipeline remains inexpensive: no mandatory cloud wareh
 | **2 — Ingestion** | 12 typed raw tables, transactional loads, SHA-256 audit, idempotency and recovery | [Phase 2 handoff](docs/phase2/README.md), [code review](docs/phase2/04_code_review_fixes.md) |
 | **3 — Analytics warehouse** | 36 dbt models and **83 data tests** (full-data baseline); generated lineage | [Phase 3 handoff](docs/phase3/README.md), [KPI contracts](docs/phase3/02_kpi_semantics.md) |
 | **4 — Quality & operations** | **18 executable quality checks**, persisted audit, safe rollback tests and synthetic CI | [Phase 4 handoff](docs/phase4/README.md), [acceptance](reports/phase4/acceptance_report.md) |
-| **5 — Power BI** | **51 DAX measures**, six PBIR dashboard pages, data/UX regression tests | [Power BI setup](powerbi/README.md), [design system](docs/phase5/00_report_experience_blueprint.md), [DAX acceptance](reports/phase5/dax_live_acceptance.md) |
+| **5 — Power BI** | **51 DAX measures**, six editable PBIR dashboard pages and report checks | [Power BI setup](powerbi/README.md), [report documentation](docs/phase5/README.md), [validation summary](reports/phase5/validation_summary.md) |
 
 ### Six Power BI report pages
 
@@ -75,7 +75,7 @@ The local production-like pipeline remains inexpensive: no mandatory cloud wareh
 | **05 — Recruitment Performance** | How are hiring throughput, backlog and speed changing? | Closed-request area, days-to-fill bubble scatter, department backlog |
 | **06 — Data Quality & Trust** | Did the pipeline run and can its outputs be trusted? | Quality status strip, reconciliation trend, audit/quality register |
 
-Pages share the **Navy–Teal identity and navigation shell** but deliberately use different content layouts and visual families. See [the complete Power BI design blueprint](docs/phase5/00_report_experience_blueprint.md). The editable PBIP entry point is **[`powerbi/WorkforceIntelligence.pbip`](powerbi/WorkforceIntelligence.pbip)**.
+Pages share the **Navy–Teal identity and navigation shell** but use different visual layouts. Read the [Power BI documentation](docs/phase5/README.md) and open the editable **[`powerbi/WorkforceIntelligence.pbip`](powerbi/WorkforceIntelligence.pbip)** in Power BI Desktop.
 
 ## Reproduce locally with an authorized source workbook
 
@@ -128,7 +128,7 @@ To test Power BI source definitions without a live Desktop session:
 python -m unittest discover -s tests -p "test_phase5_*.py" -v
 ```
 
-The optional **live DAX smoke test** (`python -m src.phase5.live_dax_smoke`) requires the corresponding Power BI Desktop model and connected modeling MCP; it is **not** executed on GitHub-hosted runners.
+To check calculations against actual imported data, run [`powerbi/dax/validation_queries.dax`](powerbi/dax/validation_queries.dax) in Power BI Desktop's DAX Query View. GitHub CI checks report/model structure but does **not** execute a live Power BI engine.
 
 ## Data trust and limitations
 
@@ -149,7 +149,7 @@ src/phase1/              Source profiling
 src/phase2/              Validated/idempotent ingestion
 src/phase3/              dbt runner and staging generation
 src/phase4/              Quality gates, audit and synthetic fixture
-src/phase5/              Power BI semantic-model and report generators
+src/phase5/              Read-only semantic model, report and SQL checks
 dbt_hr/                  dbt project: sources, staging, marts, tests
 sql/                     PostgreSQL bootstrap and monitoring DDL
 powerbi/                 PBIP/PBIR source, DAX measures and design theme

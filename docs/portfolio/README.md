@@ -45,7 +45,7 @@ Six distinct analytical views built on a tested **Python → PostgreSQL → dbt 
 ## Read the source, not just the screenshots
 
 - **Editable Power BI report and semantic model:** [Power BI project](../../powerbi/WorkforceIntelligence.pbip) and [setup](../../powerbi/README.md)
-- **Visual and KPI semantics:** [Design blueprint](../phase5/00_report_experience_blueprint.md) and [DAX acceptance](../../reports/phase5/dax_live_acceptance.md)
+- **Visual and KPI semantics:** [Power BI documentation](../phase5/README.md) and [validation summary](../../reports/phase5/validation_summary.md)
 - **Warehouse and tests:** [dbt project](../../dbt_hr/) and [Phase 3 handoff](../phase3/README.md)
 - **Quality gates:** [Phase 4 runbook](../phase4/04_runbook.md) and [synthetic CI workflow](../../.github/workflows/quality-ci.yml)
 

@@ -1,4 +1,4 @@
-# Phase 1.5 — Decision Log and Phase 2 Handoff
+# Phase 1 — Design decisions and Phase 2 preparation
 
 ## Architectural decision records
 - ADR-001: PostgreSQL + Python + dbt Core for small dataset; no Spark/Kafka in base MVP.

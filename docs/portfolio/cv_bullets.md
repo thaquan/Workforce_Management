@@ -18,7 +18,7 @@ Use only claims verified by the repository and current tests; do not describe pl
 - Developed a **six-page Power BI report** covering executive workforce trends, plan-versus-actual staffing, attrition, retention cohorts, recruitment operations and data trust, with **51 DAX measures** and consistent visual design.
 - Applied explicit month/department metric grains and **stock-versus-flow** semantics, reducing the risk of misleading headcount totals, recruitment backlog aggregation and provisional attrition interpretation.
 - Produced diagnostic visualizations including workforce waterfalls, month×department heatmaps, engagement/performance department bubbles and data-quality reconciliation trends; paired observations with documented caveats rather than causal claims.
-- Validated semantic-model/report definitions and public portfolio assets with **49 automated Phase 5/portfolio tests** and documented SQL-versus-DAX acceptance scenarios.
+- Added automated offline checks for semantic-model relationships, report bindings, six distinct dashboard pages, and public portfolio assets; documented SQL-versus-DAX acceptance scenarios.
 
 ## Vietnamese explanation for interviews
 

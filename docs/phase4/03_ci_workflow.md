@@ -9,8 +9,8 @@ Workflow: `.github/workflows/quality-ci.yml`, triggered on pushes to
 
 1. Checkout *only* tracked source code; no original Excel, `.env`,
    private PostgreSQL volume or employee-level datasets are stored in Git.
-2. Run offline Phase 2, 3, 4 contract tests **plus all Phase 5 semantic
-   model/PBIR tests** (46 tests for the six-page report at initial release).
+2. Run offline Phase 2, 3, 4 contract tests **plus Phase 5 semantic
+   model/PBIR and portfolio tests**.
 3. Create exactly 12 tiny raw tables (22 fabricated records total)
    inside a database named `workforce_ci`.
 4. Build 36 dbt models and run **80 generic/dbt custom tests** using the
@@ -87,8 +87,8 @@ GitHub runner completed successfully.
   The workflow had installed dbt into the runner's Python environment while
   invoking a helper that expected a project-local `.venv/bin/dbt`.
 - The workflow now calls the installed `dbt` binary directly for build
-  and docs, and adds offline Phase 5 checks. The corrected sequence passed
-  a **local isolated synthetic trial** (116/116 dbt build steps, 6/6 recovery
-  tests and 46/46 Phase 5 tests).
+  and docs, and includes offline Power BI source checks. The corrected
+  synthetic trial passed 116/116 dbt build steps and 6/6 recovery tests;
+  the current Phase 5 suite is checked by CI on every push.
 - Hosted results must be verified in the GitHub Actions tab after pushing;
   local checks alone do not prove the hosted workflow is green.

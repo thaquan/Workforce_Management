@@ -1,11 +1,35 @@
-"""Read-only verification of model source projections, dimension keys and KPI baselines."""
+"""Read-only SQL checks for the Power BI Import model and historical baselines.
+
+SQL is read from the checked-in model.bim file; this tool never rewrites the
+model, the report, or source records.
+"""
 from decimal import Decimal
 import json
+import re
 from src.phase2.ingest import connect_db
-from src.phase5.build_model import TABLES, MEASURES
+from src.phase5.report_validation import MODEL_FILE, read_json
+
+
+def model_queries():
+    model = read_json(MODEL_FILE)["model"]
+    queries = {}
+    for table in model["tables"]:
+        if table["name"] == "_Measures":
+            continue
+        source = table["partitions"][0]["source"]
+        statement = source["expression"]
+        statement = "\n".join(statement) if isinstance(statement, list) else statement
+        match = re.search(r'\[Query="([^"]+)"\]', statement, re.S)
+        assert match, f"No native SQL projection for {table['name']}"
+        queries[table["name"]] = (
+            match.group(1),
+            tuple(column["name"] for column in table["columns"]),
+        )
+    return queries, sum(len(t.get("measures", [])) for t in model["tables"])
 
 
 def main():
+    TABLES, measure_count = model_queries()
     with connect_db() as conn:
         conn.execute("SET default_transaction_read_only = on")
         counts = {}
@@ -52,7 +76,7 @@ def main():
         print(json.dumps({"source_tables":len(counts),"rows":counts,
                           "dimension_keys_verified":5,"relationships_verified":len(links),
                           "baseline_checks":{k:float(v[0]) for k,v in checks.items()},
-                          "measure_count":len(MEASURES)},indent=2))
+                          "measure_count":measure_count},indent=2))
 
 if __name__=="__main__":
     main()

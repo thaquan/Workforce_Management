@@ -63,7 +63,7 @@ The six Power BI pages were deliberately designed around different management qu
 
 The private-data path is validated locally against the historical workbook; source-specific baseline tests are not appropriate for synthetic data. GitHub Actions instead seeds a small, fabricated workforce dataset, builds the dbt warehouse and executes general integrity and recovery tests. The CI job also runs offline Power BI semantic-model/report tests without requiring Desktop or a real workbook.
 
-**Last validated project baseline (November 2026):** six PBIR pages, 51 DAX measures, **49 Phase 5/portfolio offline tests**, dbt synthetic CI build **116/116**, and quality findings retained as REVIEW when appropriate. These are test results, **not** claims of measurable business impact.
+**Last validated project baseline (November 2026):** six PBIR pages, 51 DAX measures, **13 portable Power BI/portfolio checks**, dbt synthetic CI build **116/116**, and quality findings retained as REVIEW when appropriate. These are test results, **not** claims of measurable business impact.
 
 ## Practical portfolio takeaway
 

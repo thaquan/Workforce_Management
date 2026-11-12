@@ -1,1 +1,1 @@
-"""Power BI semantic model and measure generation."""
+"""Read-only Power BI semantic model, report and SQL validation utilities."""

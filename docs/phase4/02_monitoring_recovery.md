@@ -26,7 +26,7 @@ The health CLI shows latest run status, per-status historical counts,
 stage, whether a run has been RUNNING for over two hours, and the last
 successful ingestion age in hours. **Detection is not automatic paging**:
 this Phase 4 local project has no scheduled daemon, cloud monitoring
-agent or email/Slack alerting.
+email/Slack alerting.
 
 Diagnostic SQL:
 
