@@ -5,9 +5,13 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   offline-and-synthetic-db:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     services:
       postgres:
         image: postgres:17-alpine
@@ -40,20 +44,26 @@ jobs:
             requirements.txt
             requirements-dbt.txt
       - name: Install pinned tools
-        run: python -m pip install -r requirements.txt -r requirements-dbt.txt
+        run: |
+          python -m pip install -r requirements.txt -r requirements-dbt.txt
+          dbt --version
       - name: Static source, contract and safety checks
         run: |
           python -m unittest discover -s tests -p 'test_phase2_idempotency.py' -v
           python -m unittest discover -s tests -p 'test_phase2_ingest.py' -v
           python -m unittest discover -s tests -p 'test_phase3_modeling.py' -v
           python -m unittest discover -s tests -p 'test_phase4_quality.py' -v
+      - name: Phase 5 semantic model and six-page report checks (offline)
+        run: python -m unittest discover -s tests -p 'test_phase5_*.py' -v
       - name: Create isolated synthetic source tables
         run: python -m src.phase4.synthetic_fixture
       - name: Build dbt models and generic tests (exclude real workbook baselines)
-        run: python -m src.phase3.dbt_runner build --exclude tag:full_baseline
+        # The runner's pinned dependencies are installed in the runner's PATH,
+        # not a project-local .venv (which dbt_runner.py requires by default).
+        run: dbt build --project-dir dbt_hr --profiles-dir dbt_hr --exclude tag:full_baseline
       - name: Persist and enforce Phase 4 quality gates
         run: python -m src.phase4.pipeline --quality-only
       - name: Isolated corruption and recovery regression
         run: python -m unittest discover -s tests -p 'test_phase4_recovery.py' -v
       - name: Generate dbt lineage docs
-        run: python -m src.phase3.dbt_runner docs generate
+        run: dbt docs generate --project-dir dbt_hr --profiles-dir dbt_hr
