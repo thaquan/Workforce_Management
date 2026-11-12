@@ -1,0 +1,3 @@
+﻿# Dagster OSS core and web UI (separate from pinned dbt packages).
+dagster==1.13.29
+dagster-webserver==1.13.29

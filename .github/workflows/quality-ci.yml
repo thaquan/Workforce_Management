@@ -11,7 +11,7 @@ permissions:
 jobs:
   offline-and-synthetic-db:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     services:
       postgres:
         image: postgres:17-alpine
@@ -43,9 +43,10 @@ jobs:
           cache-dependency-path: |
             requirements.txt
             requirements-dbt.txt
+            requirements-dagster.txt
       - name: Install pinned tools
         run: |
-          python -m pip install -r requirements.txt -r requirements-dbt.txt
+          python -m pip install -r requirements.txt -r requirements-dbt.txt -r requirements-dagster.txt
           dbt --version
       - name: Static source, contract and safety checks
         run: |
@@ -55,15 +56,17 @@ jobs:
           python -m unittest discover -s tests -p 'test_phase4_quality.py' -v
       - name: Phase 5 semantic model and six-page report checks (offline)
         run: python -m unittest discover -s tests -p 'test_phase5_*.py' -v
+      - name: Phase 7 Dagster graph and safety checks (offline)
+        run: python -m unittest discover -s tests -p 'test_phase7_*.py' -v
       - name: Create isolated synthetic source tables
         run: python -m src.phase4.synthetic_fixture
       - name: Build dbt models and generic tests (exclude real workbook baselines)
-        # The runner's pinned dependencies are installed in the runner's PATH,
-        # not a project-local .venv (which dbt_runner.py requires by default).
         run: dbt build --project-dir dbt_hr --profiles-dir dbt_hr --exclude tag:full_baseline
       - name: Persist and enforce Phase 4 quality gates
         run: python -m src.phase4.pipeline --quality-only
       - name: Isolated corruption and recovery regression
         run: python -m unittest discover -s tests -p 'test_phase4_recovery.py' -v
+      - name: Phase 7 Dagster on the disposable synthetic PostgreSQL database
+        run: python -m src.phase7.run --mode synthetic --allow-disposable-reset
       - name: Generate dbt lineage docs
         run: dbt docs generate --project-dir dbt_hr --profiles-dir dbt_hr

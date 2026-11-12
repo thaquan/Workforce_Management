@@ -21,3 +21,5 @@ __pycache__/
 **/.pbi/editorSettings.json
 **/.pbi/unappliedChanges.json
 *.pbix
+/.phase7_runtime/
+/.venv-phase7/

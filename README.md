@@ -159,10 +159,16 @@ reports/phase1..phase5/  Non-sensitive verification evidence
 data/raw/                LOCAL ONLY; intentionally ignored by Git
 ```
 
+## Phase 7 - Dagster OSS orchestration (synthetic preview)
+
+A five-asset Dagster graph is available in src/phase7/ with a **no-database dry-run by default**. It provides source fingerprinting, idempotent synthetic raw checks, dbt model/test execution, audited Phase 4 quality gates, a report-ready marker, bounded transient retries and a weekly schedule disabled by default. The existing private-workbook pipeline and Power BI Service refresh are independent.
+
+Start with the optional requirements-dagster.txt dependencies and run the Phase 7 CLI. See [Phase 7 runbook](docs/phase7/README.md) for exact setup, safe synthetic PostgreSQL demonstration, UI and verification. This is a portfolio orchestration example, **not** a live source refresh.
+
 ## Next steps
 
 The initial analytics platform and dashboard are complete. The six-page screenshot gallery, project case study and interview/demo documentation are available under [docs/portfolio/](docs/portfolio/README.md).
 
-**Planned, not yet implemented:** (1) [Dagster OSS orchestration](docs/phase7/dagster_extension_plan.md) for scheduling, retries and dependencies; (2) incremental loads and larger **synthetic Parquet/DuckDB** benchmarks; (3) clearly labeled Power BI What-if scenarios. Cloud migration is **optional**, not a requirement for reproducing the project. No GitHub Release or version tag is required for this repository's portfolio documentation.
+**Now implemented as a synthetic preview:** [Dagster OSS orchestration](docs/phase7/README.md) for dependency lineage, opt-in synthetic runs, retries and disabled-by-default scheduling. **Still planned:** incremental loads and larger **synthetic Parquet/DuckDB** benchmarks, plus clearly labeled Power BI What-if scenarios. Cloud migration is **optional**, not a requirement for reproducing the project. No GitHub Release or version tag is required for this repository's portfolio documentation.
 
 **Privacy:** Do not commit `.env`, credentials, original HR workbooks, employee-level extracts, `.pbi` import caches, or generated database files. The GitHub Actions fixture uses fictional IDs and values. Any public demo or screenshot must use authorized aggregated information or synthetic data only.

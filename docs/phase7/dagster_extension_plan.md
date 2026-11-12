@@ -1,7 +1,14 @@
-# Phase 7 Proposal — Dagster OSS Orchestration (Not Yet Implemented)
+# Phase 7 - Dagster OSS Orchestration (Synthetic Preview Implemented)
 
-**Status:** Proposed extension after completing the Phases 1–5 data platform, Power BI report, GitHub Actions and portfolio documentation. This document is a *plan*, not proof that Dagster is installed or running.
+**Status:** Local Dagster 1.13.29 asset graph, safe dry-run, isolated synthetic end-to-end execution, idempotent repeat, bounded transient retry and offline tests verified on 2026-11-12. The GitHub Actions workflow has been extended; hosted CI must be checked after push. The real workbook and private workforce_dw database remain under the existing Phase 4 runner.
 
+## Implementation checkpoint
+
+- **Code:** src/phase7/definitions.py, safety.py and run.py; optional requirements-dagster.txt.
+- **Runbook:** docs/phase7/README.md; local evidence in reports/phase7/validation_summary.md.
+- **Safety:** dry-run is default; synthetic writes require an explicit CLI flag and confirmed local workforce_ci database. No user Power BI edits are included.
+- **Integration:** fresh ephemeral PostgreSQL 17 database, 22 invented fixture rows, 116 successful dbt nodes, and Phase 4 quality-only audit. Repeat run skips unchanged raw fixture.
+- **Remaining boundaries:** no private workbook Dagster job, no automatic gateway refresh, and no active local schedule. A successful hosted CI run is required before marking the whole Phase 7 rollout complete.
 ## Objective
 
 Turn the existing manually invoked Python ingestion → dbt build/test → Phase 4 quality gates into **observable, reproducible, scheduled orchestration** with explicit dependencies, retries and run records. Reuse the current tested jobs rather than rewriting working ingestion and SQL logic.
