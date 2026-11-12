@@ -1,0 +1,242 @@
+// 01 Workforce | Stock at last selected reporting month; never sum across months.
+Ending Headcount =
+VAR LastMonth = MAX ( 'Dim Month'[month] )
+RETURN CALCULATE ( SUM ( 'Fact Workforce'[headcount] ), KEEPFILTERS ( 'Dim Month'[month] = LastMonth ) )
+
+// 01 Workforce | Stock at last selected reporting month.
+Ending FTE =
+VAR LastMonth = MAX ( 'Dim Month'[month] )
+RETURN CALCULATE ( SUM ( 'Fact Workforce'[fte] ), KEEPFILTERS ( 'Dim Month'[month] = LastMonth ) )
+
+// 01 Workforce | Weighted by headcount, excluding unavailable tenure.
+Weighted Average Tenure Months =
+VAR M = MAX ( 'Dim Month'[month] )
+RETURN CALCULATE (
+    DIVIDE ( SUMX ( 'Fact Workforce', 'Fact Workforce'[headcount] * 'Fact Workforce'[avg_tenure_months] ),
+             SUMX ( FILTER ( 'Fact Workforce', NOT ISBLANK ( 'Fact Workforce'[avg_tenure_months] ) ), 'Fact Workforce'[headcount] ) ),
+    KEEPFILTERS ( 'Dim Month'[month] = M ) )
+
+// 01 Workforce
+Prior Month Headcount =
+VAR M = EDATE ( MAX ( 'Dim Month'[month] ), -1 )
+RETURN CALCULATE ( [Ending Headcount], REMOVEFILTERS ( 'Dim Month' ), 'Dim Month'[month] = M )
+
+// 01 Workforce
+Headcount MoM Change =
+IF ( NOT ISBLANK ( [Prior Month Headcount] ), [Ending Headcount] - [Prior Month Headcount] )
+
+// 01 Workforce
+Headcount MoM % =
+DIVIDE ( [Headcount MoM Change], [Prior Month Headcount] )
+
+// 01 Workforce
+FTE per Headcount =
+DIVIDE ( [Ending FTE], [Ending Headcount] )
+
+// 01 Workforce
+Headcount YoY Change =
+VAR M = EDATE ( MAX ( 'Dim Month'[month] ), -12 )
+VAR Prior = CALCULATE ( [Ending Headcount], REMOVEFILTERS ( 'Dim Month' ), 'Dim Month'[month] = M )
+RETURN IF ( NOT ISBLANK ( Prior ), [Ending Headcount] - Prior )
+
+// 02 Planning
+Planned Headcount =
+IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), CALCULATE ( SUM ( 'Fact Planning'[planned_headcount] ), KEEPFILTERS ( 'Dim Month'[month] = MAX ( 'Dim Month'[month] ) ) ) )
+
+// 02 Planning
+Planning Actual Headcount =
+IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), CALCULATE ( SUM ( 'Fact Planning'[actual_headcount] ), KEEPFILTERS ( 'Dim Month'[month] = MAX ( 'Dim Month'[month] ) ) ) )
+
+// 02 Planning
+Headcount Gap =
+IF ( NOT ISBLANK ( [Planned Headcount] ) && NOT ISBLANK ( [Planning Actual Headcount] ), [Planning Actual Headcount] - [Planned Headcount] )
+
+// 02 Planning
+Headcount Attainment % =
+DIVIDE ( [Planning Actual Headcount], [Planned Headcount] )
+
+// 02 Planning
+Budgeted FTE =
+IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), CALCULATE ( SUM ( 'Fact Planning'[budgeted_fte] ), KEEPFILTERS ( 'Dim Month'[month] = MAX ( 'Dim Month'[month] ) ) ) )
+
+// 02 Planning
+Planning Actual FTE =
+IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), CALCULATE ( SUM ( 'Fact Planning'[actual_fte] ), KEEPFILTERS ( 'Dim Month'[month] = MAX ( 'Dim Month'[month] ) ) ) )
+
+// 02 Planning
+FTE Gap =
+IF ( NOT ISBLANK ( [Budgeted FTE] ) && NOT ISBLANK ( [Planning Actual FTE] ), [Planning Actual FTE] - [Budgeted FTE] )
+
+// 03 Attrition
+Hires =
+IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), SUM ( 'Fact Attrition'[hires] ) )
+
+// 03 Attrition
+Terminations =
+IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), SUM ( 'Fact Attrition'[terminations] ) )
+
+// 03 Attrition
+Voluntary Terminations =
+IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), SUM ( 'Fact Attrition'[voluntary_terminations] ) )
+
+// 03 Attrition
+Involuntary Terminations =
+IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), SUM ( 'Fact Attrition'[involuntary_terminations] ) )
+
+// 03 Attrition | Recorded hires less exits; not equivalent to snapshot headcount change.
+Net Hires =
+IF ( NOT ISBLANK ( [Hires] ), [Hires] - [Terminations] )
+
+// 03 Attrition
+Monthly Average Headcount =
+IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), IF ( HASONEVALUE ( 'Dim Month'[month] ) &&
+    COUNTROWS ( FILTER ( 'Fact Attrition', ISBLANK ( 'Fact Attrition'[average_headcount] ) ) ) = 0,
+    SUM ( 'Fact Attrition'[average_headcount] ) ) )
+
+// 03 Attrition | One month only. Source reconciliation may be provisional.
+Monthly Attrition % =
+DIVIDE ( [Terminations], [Monthly Average Headcount] )
+
+// 03 Attrition | One month only. Source reconciliation may be provisional.
+Monthly Voluntary Attrition % =
+DIVIDE ( [Voluntary Terminations], [Monthly Average Headcount] )
+
+// 03 Attrition | One month only. Source reconciliation may be provisional.
+Monthly Involuntary Attrition % =
+DIVIDE ( [Involuntary Terminations], [Monthly Average Headcount] )
+
+// 03 Attrition | Company-level source warning propagated into department rates.
+Attrition Quality Status =
+IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), SWITCH ( TRUE (),
+    COUNTROWS ( 'Fact Attrition' ) = 0, BLANK (),
+    COUNTROWS ( FILTER ( 'Fact Attrition', 'Fact Attrition'[rate_quality_status] = "NO_PRIOR_SNAPSHOT" ) ) > 0, "Missing prior snapshot",
+    COUNTROWS ( FILTER ( 'Fact Attrition', 'Fact Attrition'[rate_quality_status] = "PROVISIONAL_SOURCE_MISMATCH" ) ) > 0, "Provisional - source mismatch",
+    "Reference matched" ) )
+
+// 04 Recruitment
+Ending Open Requisitions =
+IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), CALCULATE ( SUM ( 'Fact Recruitment'[open_requisitions] ), KEEPFILTERS ( 'Dim Month'[month] = MAX ( 'Dim Month'[month] ) ) ) )
+
+// 04 Recruitment
+Filled Requisitions =
+IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), SUM ( 'Fact Recruitment'[filled_requisitions] ) )
+
+// 04 Recruitment
+Cancelled Requisitions =
+IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), SUM ( 'Fact Recruitment'[cancelled_requisitions] ) )
+
+// 04 Recruitment | Weighted by fills with a known duration.
+Weighted Days to Fill =
+IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), VAR Known = FILTER ( 'Fact Recruitment', 'Fact Recruitment'[filled_requisitions] > 0 && NOT ISBLANK ( 'Fact Recruitment'[avg_days_to_fill] ) )
+RETURN DIVIDE ( SUMX ( Known, 'Fact Recruitment'[weighted_days_to_fill_numerator] ), SUMX ( Known, 'Fact Recruitment'[filled_requisitions] ) ) )
+
+// 04 Recruitment | Share of observed closed requisitions; not a funnel conversion rate.
+Fill Share of Closed Requisitions =
+DIVIDE ( [Filled Requisitions], [Filled Requisitions] + [Cancelled Requisitions] )
+
+// 04 Recruitment
+Prior Month Open Requisitions =
+VAR M = EDATE ( MAX ( 'Dim Month'[month] ), -1 )
+RETURN CALCULATE ( [Ending Open Requisitions], REMOVEFILTERS ( 'Dim Month' ), 'Dim Month'[month] = M )
+
+// 05 Retention | Historical profile population at observation endpoint; not monthly headcount.
+Observed Employees =
+SUM ( 'Fact Retention'[employee_count] )
+
+// 05 Retention
+Exited Employees =
+CALCULATE ( [Observed Employees], KEEPFILTERS ( 'Fact Retention'[exited] = TRUE () ) )
+
+// 05 Retention
+Active Employees =
+CALCULATE ( [Observed Employees], KEEPFILTERS ( 'Fact Retention'[exited] = FALSE () ) )
+
+// 05 Retention | Latest observed/pre-exit survey; excludes missing values.
+Average Engagement Score =
+DIVIDE ( SUM ( 'Fact Retention'[engagement_sum] ), SUM ( 'Fact Retention'[engagement_count] ) )
+
+// 05 Retention
+Average Performance Rating =
+DIVIDE ( SUM ( 'Fact Retention'[performance_sum] ), SUM ( 'Fact Retention'[performance_count] ) )
+
+// 05 Retention
+Average Prior 365d Absence Days =
+DIVIDE ( SUM ( 'Fact Retention'[absence_days_sum] ), [Observed Employees] )
+
+// 06 Time Intelligence
+Headcount YoY % =
+VAR M = EDATE ( MAX ( 'Dim Month'[month] ), -12 )
+VAR Prior = CALCULATE ( [Ending Headcount], REMOVEFILTERS ( 'Dim Month' ), 'Dim Month'[month] = M )
+RETURN DIVIDE ( [Headcount YoY Change], Prior )
+
+// 06 Time Intelligence
+YTD Hires =
+VAR M = MAX ( 'Dim Month'[month] )
+RETURN CALCULATE ( [Hires], FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[year] = YEAR ( M ) && 'Dim Month'[month] <= M ) )
+
+// 06 Time Intelligence
+YTD Terminations =
+VAR M = MAX ( 'Dim Month'[month] )
+RETURN CALCULATE ( [Terminations], FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[year] = YEAR ( M ) && 'Dim Month'[month] <= M ) )
+
+// 06 Time Intelligence | Selected contiguous period exits divided by mean monthly workforce; blank if any month lacks valid denominator.
+Period Attrition % =
+IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), VAR Months = VALUES ( 'Dim Month'[month] )
+VAR ValidMonths = FILTER ( Months, NOT ISBLANK ( CALCULATE ( [Monthly Average Headcount] ) ) && CALCULATE ( [Monthly Average Headcount] ) > 0 )
+VAR N = COUNTROWS ( Months )
+VAR Span = DATEDIFF ( MIN ( 'Dim Month'[month] ), MAX ( 'Dim Month'[month] ), MONTH ) + 1
+RETURN IF ( N > 0 && N = Span && COUNTROWS ( ValidMonths ) = N,
+    DIVIDE ( [Terminations], AVERAGEX ( ValidMonths, CALCULATE ( [Monthly Average Headcount] ) ) ) ) )
+
+// 06 Time Intelligence | Requires twelve consecutive valid monthly denominators.
+Rolling 12M Attrition % =
+VAR M = MAX ( 'Dim Month'[month] )
+VAR WindowMonths = FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[month] > EDATE ( M, -12 ) && 'Dim Month'[month] <= M )
+RETURN IF ( COUNTROWS ( WindowMonths ) = 12, CALCULATE ( [Period Attrition %], WindowMonths ) )
+
+// 06 Time Intelligence
+Rolling 12M Terminations =
+VAR M = MAX ( 'Dim Month'[month] )
+VAR WindowMonths = FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[month] > EDATE ( M, -12 ) && 'Dim Month'[month] <= M )
+RETURN IF ( COUNTROWS ( WindowMonths ) = 12, CALCULATE ( [Terminations], WindowMonths ) )
+
+// 06 Time Intelligence
+YTD Filled Requisitions =
+VAR M = MAX ( 'Dim Month'[month] )
+RETURN CALCULATE ( [Filled Requisitions], FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[year] = YEAR ( M ) && 'Dim Month'[month] <= M ) )
+
+// 07 Data Quality | Company-wide; blank when department, location or level is filtered.
+Snapshot Reconciliation Difference =
+IF ( ISCROSSFILTERED ( 'Dim Department' ) || ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), VAR LastMonth = MAX ( 'Dim Month'[month] )
+RETURN CALCULATE ( SUM ( 'Fact Reconciliation'[headcount_difference] ), KEEPFILTERS ( 'Dim Month'[month] = LastMonth ) ) )
+
+// 07 Data Quality
+Reconciliation Review Months =
+IF ( ISCROSSFILTERED ( 'Dim Department' ) || ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), COALESCE ( CALCULATE ( DISTINCTCOUNT ( 'Fact Reconciliation'[month] ), KEEPFILTERS ( 'Fact Reconciliation'[reconciliation_status] = "REVIEW" ) ), 0 ) )
+
+// 07 Data Quality
+Latest Pipeline Run ID =
+MAXX ( ALL ( 'Pipeline Runs' ), 'Pipeline Runs'[pipeline_run_id] )
+
+// 07 Data Quality
+Latest Pipeline Status =
+VAR R = [Latest Pipeline Run ID]
+RETURN CALCULATE ( SELECTEDVALUE ( 'Pipeline Runs'[status] ), REMOVEFILTERS ( 'Pipeline Runs' ), 'Pipeline Runs'[pipeline_run_id] = R )
+
+// 07 Data Quality | Blank when the latest run has no completed quality checks; zero only after checks exist.
+Latest Quality PASS =
+VAR R = [Latest Pipeline Run ID]
+VAR CheckCount = CALCULATE ( COUNTROWS ( 'Quality Results' ), REMOVEFILTERS ( 'Pipeline Runs' ), REMOVEFILTERS ( 'Quality Results' ), 'Quality Results'[pipeline_run_id] = R )
+RETURN IF ( NOT ISBLANK ( R ) && CheckCount > 0, COALESCE ( CALCULATE ( COUNTROWS ( 'Quality Results' ), REMOVEFILTERS ( 'Pipeline Runs' ), REMOVEFILTERS ( 'Quality Results' ), 'Quality Results'[pipeline_run_id] = R, 'Quality Results'[status] = "PASS" ), 0 ) )
+
+// 07 Data Quality | Blank when the latest run has no completed quality checks; zero only after checks exist.
+Latest Quality REVIEW =
+VAR R = [Latest Pipeline Run ID]
+VAR CheckCount = CALCULATE ( COUNTROWS ( 'Quality Results' ), REMOVEFILTERS ( 'Pipeline Runs' ), REMOVEFILTERS ( 'Quality Results' ), 'Quality Results'[pipeline_run_id] = R )
+RETURN IF ( NOT ISBLANK ( R ) && CheckCount > 0, COALESCE ( CALCULATE ( COUNTROWS ( 'Quality Results' ), REMOVEFILTERS ( 'Pipeline Runs' ), REMOVEFILTERS ( 'Quality Results' ), 'Quality Results'[pipeline_run_id] = R, 'Quality Results'[status] = "REVIEW" ), 0 ) )
+
+// 07 Data Quality | Blank when the latest run has no completed quality checks; zero only after checks exist.
+Latest Quality FAIL =
+VAR R = [Latest Pipeline Run ID]
+VAR CheckCount = CALCULATE ( COUNTROWS ( 'Quality Results' ), REMOVEFILTERS ( 'Pipeline Runs' ), REMOVEFILTERS ( 'Quality Results' ), 'Quality Results'[pipeline_run_id] = R )
+RETURN IF ( NOT ISBLANK ( R ) && CheckCount > 0, COALESCE ( CALCULATE ( COUNTROWS ( 'Quality Results' ), REMOVEFILTERS ( 'Pipeline Runs' ), REMOVEFILTERS ( 'Quality Results' ), 'Quality Results'[pipeline_run_id] = R, 'Quality Results'[status] = "FAIL" ), 0 ) )

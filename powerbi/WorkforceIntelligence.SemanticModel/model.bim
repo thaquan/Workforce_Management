@@ -1,0 +1,1138 @@
+{
+  "name": "WorkforceIntelligence",
+  "compatibilityLevel": 1600,
+  "model": {
+    "culture": "en-US",
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "tables": [
+      {
+        "name": "Dim Month",
+        "columns": [
+          {
+            "name": "month",
+            "dataType": "dateTime",
+            "sourceColumn": "month",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "year",
+            "dataType": "int64",
+            "sourceColumn": "year",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "month_number",
+            "dataType": "int64",
+            "sourceColumn": "month_number",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "year_month",
+            "dataType": "string",
+            "sourceColumn": "year_month",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Dim Month",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = PostgreSQL.Database(\"127.0.0.1:5433\", \"workforce_dw\", [Query=\"SELECT DISTINCT month, year, month_number, to_char(month,'YYYY-MM') AS year_month FROM marts.dim_date WHERE month BETWEEN DATE '2023-01-01' AND DATE '2025-12-01' ORDER BY month\"]),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"month\", type datetime}, {\"year\", Int64.Type}, {\"month_number\", Int64.Type}, {\"year_month\", type text}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Dim Department",
+        "columns": [
+          {
+            "name": "department_id",
+            "dataType": "string",
+            "sourceColumn": "department_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "department",
+            "dataType": "string",
+            "sourceColumn": "department",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "department_function",
+            "dataType": "string",
+            "sourceColumn": "department_function",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Dim Department",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = PostgreSQL.Database(\"127.0.0.1:5433\", \"workforce_dw\", [Query=\"SELECT department_id, department, department_function FROM marts.dim_department\"]),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"department_id\", type text}, {\"department\", type text}, {\"department_function\", type text}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Dim Location",
+        "columns": [
+          {
+            "name": "location_id",
+            "dataType": "string",
+            "sourceColumn": "location_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "location",
+            "dataType": "string",
+            "sourceColumn": "location",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "country",
+            "dataType": "string",
+            "sourceColumn": "country",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "region",
+            "dataType": "string",
+            "sourceColumn": "region",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Dim Location",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = PostgreSQL.Database(\"127.0.0.1:5433\", \"workforce_dw\", [Query=\"SELECT location_id, location, country, region FROM marts.dim_location\"]),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"location_id\", type text}, {\"location\", type text}, {\"country\", type text}, {\"region\", type text}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Dim Level",
+        "columns": [
+          {
+            "name": "level",
+            "dataType": "string",
+            "sourceColumn": "level",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Dim Level",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = PostgreSQL.Database(\"127.0.0.1:5433\", \"workforce_dw\", [Query=\"SELECT level FROM marts.dim_level\"]),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"level\", type text}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Fact Workforce",
+        "columns": [
+          {
+            "name": "month",
+            "dataType": "dateTime",
+            "sourceColumn": "month",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "department_id",
+            "dataType": "string",
+            "sourceColumn": "department_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "location_id",
+            "dataType": "string",
+            "sourceColumn": "location_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "level",
+            "dataType": "string",
+            "sourceColumn": "level",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "headcount",
+            "dataType": "int64",
+            "sourceColumn": "headcount",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "fte",
+            "dataType": "double",
+            "sourceColumn": "fte",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "avg_tenure_months",
+            "dataType": "double",
+            "sourceColumn": "avg_tenure_months",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Fact Workforce",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = PostgreSQL.Database(\"127.0.0.1:5433\", \"workforce_dw\", [Query=\"SELECT month, department_id, location_id, level, headcount, fte, avg_tenure_months FROM marts.mart_workforce_monthly\"]),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"month\", type datetime}, {\"department_id\", type text}, {\"location_id\", type text}, {\"level\", type text}, {\"headcount\", Int64.Type}, {\"fte\", type number}, {\"avg_tenure_months\", type number}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Fact Planning",
+        "columns": [
+          {
+            "name": "month",
+            "dataType": "dateTime",
+            "sourceColumn": "month",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "department_id",
+            "dataType": "string",
+            "sourceColumn": "department_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "planning_scenario",
+            "dataType": "string",
+            "sourceColumn": "planning_scenario",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "actual_headcount",
+            "dataType": "int64",
+            "sourceColumn": "actual_headcount",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "planned_headcount",
+            "dataType": "int64",
+            "sourceColumn": "planned_headcount",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "actual_fte",
+            "dataType": "double",
+            "sourceColumn": "actual_fte",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "budgeted_fte",
+            "dataType": "double",
+            "sourceColumn": "budgeted_fte",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Fact Planning",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = PostgreSQL.Database(\"127.0.0.1:5433\", \"workforce_dw\", [Query=\"SELECT month, department_id, planning_scenario, actual_headcount, planned_headcount, actual_fte, budgeted_fte FROM marts.mart_workforce_plan_vs_actual\"]),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"month\", type datetime}, {\"department_id\", type text}, {\"planning_scenario\", type text}, {\"actual_headcount\", Int64.Type}, {\"planned_headcount\", Int64.Type}, {\"actual_fte\", type number}, {\"budgeted_fte\", type number}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Fact Attrition",
+        "columns": [
+          {
+            "name": "month",
+            "dataType": "dateTime",
+            "sourceColumn": "month",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "department_id",
+            "dataType": "string",
+            "sourceColumn": "department_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "average_headcount",
+            "dataType": "double",
+            "sourceColumn": "average_headcount",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "hires",
+            "dataType": "int64",
+            "sourceColumn": "hires",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "terminations",
+            "dataType": "int64",
+            "sourceColumn": "terminations",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "voluntary_terminations",
+            "dataType": "int64",
+            "sourceColumn": "voluntary_terminations",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "involuntary_terminations",
+            "dataType": "int64",
+            "sourceColumn": "involuntary_terminations",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "rate_quality_status",
+            "dataType": "string",
+            "sourceColumn": "rate_quality_status",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Fact Attrition",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = PostgreSQL.Database(\"127.0.0.1:5433\", \"workforce_dw\", [Query=\"SELECT month, department_id, average_headcount, hires, terminations, voluntary_terminations, involuntary_terminations, rate_quality_status FROM marts.mart_attrition_monthly\"]),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"month\", type datetime}, {\"department_id\", type text}, {\"average_headcount\", type number}, {\"hires\", Int64.Type}, {\"terminations\", Int64.Type}, {\"voluntary_terminations\", Int64.Type}, {\"involuntary_terminations\", Int64.Type}, {\"rate_quality_status\", type text}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Fact Recruitment",
+        "columns": [
+          {
+            "name": "month",
+            "dataType": "dateTime",
+            "sourceColumn": "month",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "department_id",
+            "dataType": "string",
+            "sourceColumn": "department_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "open_requisitions",
+            "dataType": "int64",
+            "sourceColumn": "open_requisitions",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "filled_requisitions",
+            "dataType": "int64",
+            "sourceColumn": "filled_requisitions",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "cancelled_requisitions",
+            "dataType": "int64",
+            "sourceColumn": "cancelled_requisitions",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "weighted_days_to_fill_numerator",
+            "dataType": "double",
+            "sourceColumn": "weighted_days_to_fill_numerator",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "avg_days_to_fill",
+            "dataType": "double",
+            "sourceColumn": "avg_days_to_fill",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Fact Recruitment",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = PostgreSQL.Database(\"127.0.0.1:5433\", \"workforce_dw\", [Query=\"SELECT month, department_id, open_requisitions, filled_requisitions, cancelled_requisitions, weighted_days_to_fill_numerator, avg_days_to_fill FROM marts.mart_recruitment_monthly\"]),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"month\", type datetime}, {\"department_id\", type text}, {\"open_requisitions\", Int64.Type}, {\"filled_requisitions\", Int64.Type}, {\"cancelled_requisitions\", Int64.Type}, {\"weighted_days_to_fill_numerator\", type number}, {\"avg_days_to_fill\", type number}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Fact Retention",
+        "columns": [
+          {
+            "name": "current_department_id",
+            "dataType": "string",
+            "sourceColumn": "current_department_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "exited",
+            "dataType": "boolean",
+            "sourceColumn": "exited",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "employee_count",
+            "dataType": "int64",
+            "sourceColumn": "employee_count",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "engagement_count",
+            "dataType": "int64",
+            "sourceColumn": "engagement_count",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "engagement_sum",
+            "dataType": "double",
+            "sourceColumn": "engagement_sum",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "performance_count",
+            "dataType": "int64",
+            "sourceColumn": "performance_count",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "performance_sum",
+            "dataType": "double",
+            "sourceColumn": "performance_sum",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "absence_days_sum",
+            "dataType": "double",
+            "sourceColumn": "absence_days_sum",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Fact Retention",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = PostgreSQL.Database(\"127.0.0.1:5433\", \"workforce_dw\", [Query=\"SELECT current_department_id, exited, COUNT(*) AS employee_count, COUNT(last_pre_exit_engagement_score) AS engagement_count, SUM(last_pre_exit_engagement_score) AS engagement_sum, COUNT(last_pre_exit_performance_rating) AS performance_count, SUM(last_pre_exit_performance_rating) AS performance_sum, SUM(absence_days_prior_365) AS absence_days_sum FROM marts.mart_retention_analysis GROUP BY current_department_id, exited\"]),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"current_department_id\", type text}, {\"exited\", type logical}, {\"employee_count\", Int64.Type}, {\"engagement_count\", Int64.Type}, {\"engagement_sum\", type number}, {\"performance_count\", Int64.Type}, {\"performance_sum\", type number}, {\"absence_days_sum\", type number}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Fact Reconciliation",
+        "columns": [
+          {
+            "name": "month",
+            "dataType": "dateTime",
+            "sourceColumn": "month",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "snapshot_headcount",
+            "dataType": "int64",
+            "sourceColumn": "snapshot_headcount",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "employee_asof_headcount",
+            "dataType": "int64",
+            "sourceColumn": "employee_asof_headcount",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "headcount_difference",
+            "dataType": "int64",
+            "sourceColumn": "headcount_difference",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "reconciliation_status",
+            "dataType": "string",
+            "sourceColumn": "reconciliation_status",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Fact Reconciliation",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = PostgreSQL.Database(\"127.0.0.1:5433\", \"workforce_dw\", [Query=\"SELECT month, snapshot_headcount, employee_asof_headcount, headcount_difference, reconciliation_status FROM marts.mart_workforce_reconciliation\"]),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"month\", type datetime}, {\"snapshot_headcount\", Int64.Type}, {\"employee_asof_headcount\", Int64.Type}, {\"headcount_difference\", Int64.Type}, {\"reconciliation_status\", type text}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Pipeline Runs",
+        "columns": [
+          {
+            "name": "pipeline_run_id",
+            "dataType": "int64",
+            "sourceColumn": "pipeline_run_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "status",
+            "dataType": "string",
+            "sourceColumn": "status",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "run_mode",
+            "dataType": "string",
+            "sourceColumn": "run_mode",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "stage",
+            "dataType": "string",
+            "sourceColumn": "stage",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "started_at",
+            "dataType": "dateTime",
+            "sourceColumn": "started_at",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "finished_at",
+            "dataType": "dateTime",
+            "sourceColumn": "finished_at",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Pipeline Runs",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = PostgreSQL.Database(\"127.0.0.1:5433\", \"workforce_dw\", [Query=\"SELECT pipeline_run_id, status, run_mode, stage, started_at, finished_at FROM audit.pipeline_runs\"]),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"pipeline_run_id\", Int64.Type}, {\"status\", type text}, {\"run_mode\", type text}, {\"stage\", type text}, {\"started_at\", type datetime}, {\"finished_at\", type datetime}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Quality Results",
+        "columns": [
+          {
+            "name": "pipeline_run_id",
+            "dataType": "int64",
+            "sourceColumn": "pipeline_run_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "check_id",
+            "dataType": "string",
+            "sourceColumn": "check_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "status",
+            "dataType": "string",
+            "sourceColumn": "status",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "affected_count",
+            "dataType": "int64",
+            "sourceColumn": "affected_count",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Quality Results",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = PostgreSQL.Database(\"127.0.0.1:5433\", \"workforce_dw\", [Query=\"SELECT pipeline_run_id, check_id, status, affected_count FROM audit.data_quality_results\"]),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"pipeline_run_id\", Int64.Type}, {\"check_id\", type text}, {\"status\", type text}, {\"affected_count\", Int64.Type}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "_Measures",
+        "columns": [
+          {
+            "name": "Placeholder",
+            "dataType": "int64",
+            "sourceColumn": "Placeholder",
+            "isHidden": true,
+            "summarizeBy": "none"
+          }
+        ],
+        "measures": [
+          {
+            "name": "Ending Headcount",
+            "expression": "VAR LastMonth = MAX ( 'Dim Month'[month] )\nRETURN CALCULATE ( SUM ( 'Fact Workforce'[headcount] ), KEEPFILTERS ( 'Dim Month'[month] = LastMonth ) )",
+            "formatString": "#,0",
+            "displayFolder": "01 Workforce",
+            "description": "Stock at last selected reporting month; never sum across months."
+          },
+          {
+            "name": "Ending FTE",
+            "expression": "VAR LastMonth = MAX ( 'Dim Month'[month] )\nRETURN CALCULATE ( SUM ( 'Fact Workforce'[fte] ), KEEPFILTERS ( 'Dim Month'[month] = LastMonth ) )",
+            "formatString": "#,0.0",
+            "displayFolder": "01 Workforce",
+            "description": "Stock at last selected reporting month."
+          },
+          {
+            "name": "Weighted Average Tenure Months",
+            "expression": "VAR M = MAX ( 'Dim Month'[month] )\nRETURN CALCULATE (\n    DIVIDE ( SUMX ( 'Fact Workforce', 'Fact Workforce'[headcount] * 'Fact Workforce'[avg_tenure_months] ),\n             SUMX ( FILTER ( 'Fact Workforce', NOT ISBLANK ( 'Fact Workforce'[avg_tenure_months] ) ), 'Fact Workforce'[headcount] ) ),\n    KEEPFILTERS ( 'Dim Month'[month] = M ) )",
+            "formatString": "#,0.0",
+            "displayFolder": "01 Workforce",
+            "description": "Weighted by headcount, excluding unavailable tenure."
+          },
+          {
+            "name": "Prior Month Headcount",
+            "expression": "VAR M = EDATE ( MAX ( 'Dim Month'[month] ), -1 )\nRETURN CALCULATE ( [Ending Headcount], REMOVEFILTERS ( 'Dim Month' ), 'Dim Month'[month] = M )",
+            "formatString": "#,0",
+            "displayFolder": "01 Workforce",
+            "description": ""
+          },
+          {
+            "name": "Headcount MoM Change",
+            "expression": "IF ( NOT ISBLANK ( [Prior Month Headcount] ), [Ending Headcount] - [Prior Month Headcount] )",
+            "formatString": "#,0",
+            "displayFolder": "01 Workforce",
+            "description": ""
+          },
+          {
+            "name": "Headcount MoM %",
+            "expression": "DIVIDE ( [Headcount MoM Change], [Prior Month Headcount] )",
+            "formatString": "0.0%;-0.0%;0.0%",
+            "displayFolder": "01 Workforce",
+            "description": ""
+          },
+          {
+            "name": "FTE per Headcount",
+            "expression": "DIVIDE ( [Ending FTE], [Ending Headcount] )",
+            "formatString": "0.00",
+            "displayFolder": "01 Workforce",
+            "description": ""
+          },
+          {
+            "name": "Headcount YoY Change",
+            "expression": "VAR M = EDATE ( MAX ( 'Dim Month'[month] ), -12 )\nVAR Prior = CALCULATE ( [Ending Headcount], REMOVEFILTERS ( 'Dim Month' ), 'Dim Month'[month] = M )\nRETURN IF ( NOT ISBLANK ( Prior ), [Ending Headcount] - Prior )",
+            "formatString": "#,0",
+            "displayFolder": "01 Workforce",
+            "description": ""
+          },
+          {
+            "name": "Planned Headcount",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), CALCULATE ( SUM ( 'Fact Planning'[planned_headcount] ), KEEPFILTERS ( 'Dim Month'[month] = MAX ( 'Dim Month'[month] ) ) ) )",
+            "formatString": "#,0",
+            "displayFolder": "02 Planning",
+            "description": ""
+          },
+          {
+            "name": "Planning Actual Headcount",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), CALCULATE ( SUM ( 'Fact Planning'[actual_headcount] ), KEEPFILTERS ( 'Dim Month'[month] = MAX ( 'Dim Month'[month] ) ) ) )",
+            "formatString": "#,0",
+            "displayFolder": "02 Planning",
+            "description": ""
+          },
+          {
+            "name": "Headcount Gap",
+            "expression": "IF ( NOT ISBLANK ( [Planned Headcount] ) && NOT ISBLANK ( [Planning Actual Headcount] ), [Planning Actual Headcount] - [Planned Headcount] )",
+            "formatString": "#,0",
+            "displayFolder": "02 Planning",
+            "description": ""
+          },
+          {
+            "name": "Headcount Attainment %",
+            "expression": "DIVIDE ( [Planning Actual Headcount], [Planned Headcount] )",
+            "formatString": "0.0%;-0.0%;0.0%",
+            "displayFolder": "02 Planning",
+            "description": ""
+          },
+          {
+            "name": "Budgeted FTE",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), CALCULATE ( SUM ( 'Fact Planning'[budgeted_fte] ), KEEPFILTERS ( 'Dim Month'[month] = MAX ( 'Dim Month'[month] ) ) ) )",
+            "formatString": "#,0.0",
+            "displayFolder": "02 Planning",
+            "description": ""
+          },
+          {
+            "name": "Planning Actual FTE",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), CALCULATE ( SUM ( 'Fact Planning'[actual_fte] ), KEEPFILTERS ( 'Dim Month'[month] = MAX ( 'Dim Month'[month] ) ) ) )",
+            "formatString": "#,0.0",
+            "displayFolder": "02 Planning",
+            "description": ""
+          },
+          {
+            "name": "FTE Gap",
+            "expression": "IF ( NOT ISBLANK ( [Budgeted FTE] ) && NOT ISBLANK ( [Planning Actual FTE] ), [Planning Actual FTE] - [Budgeted FTE] )",
+            "formatString": "#,0.0",
+            "displayFolder": "02 Planning",
+            "description": ""
+          },
+          {
+            "name": "Hires",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), SUM ( 'Fact Attrition'[hires] ) )",
+            "formatString": "#,0",
+            "displayFolder": "03 Attrition",
+            "description": ""
+          },
+          {
+            "name": "Terminations",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), SUM ( 'Fact Attrition'[terminations] ) )",
+            "formatString": "#,0",
+            "displayFolder": "03 Attrition",
+            "description": ""
+          },
+          {
+            "name": "Voluntary Terminations",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), SUM ( 'Fact Attrition'[voluntary_terminations] ) )",
+            "formatString": "#,0",
+            "displayFolder": "03 Attrition",
+            "description": ""
+          },
+          {
+            "name": "Involuntary Terminations",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), SUM ( 'Fact Attrition'[involuntary_terminations] ) )",
+            "formatString": "#,0",
+            "displayFolder": "03 Attrition",
+            "description": ""
+          },
+          {
+            "name": "Net Hires",
+            "expression": "IF ( NOT ISBLANK ( [Hires] ), [Hires] - [Terminations] )",
+            "formatString": "#,0",
+            "displayFolder": "03 Attrition",
+            "description": "Recorded hires less exits; not equivalent to snapshot headcount change."
+          },
+          {
+            "name": "Monthly Average Headcount",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), IF ( HASONEVALUE ( 'Dim Month'[month] ) &&\n    COUNTROWS ( FILTER ( 'Fact Attrition', ISBLANK ( 'Fact Attrition'[average_headcount] ) ) ) = 0,\n    SUM ( 'Fact Attrition'[average_headcount] ) ) )",
+            "formatString": "#,0.0",
+            "displayFolder": "03 Attrition",
+            "description": ""
+          },
+          {
+            "name": "Monthly Attrition %",
+            "expression": "DIVIDE ( [Terminations], [Monthly Average Headcount] )",
+            "formatString": "0.0%;-0.0%;0.0%",
+            "displayFolder": "03 Attrition",
+            "description": "One month only. Source reconciliation may be provisional."
+          },
+          {
+            "name": "Monthly Voluntary Attrition %",
+            "expression": "DIVIDE ( [Voluntary Terminations], [Monthly Average Headcount] )",
+            "formatString": "0.0%;-0.0%;0.0%",
+            "displayFolder": "03 Attrition",
+            "description": "One month only. Source reconciliation may be provisional."
+          },
+          {
+            "name": "Monthly Involuntary Attrition %",
+            "expression": "DIVIDE ( [Involuntary Terminations], [Monthly Average Headcount] )",
+            "formatString": "0.0%;-0.0%;0.0%",
+            "displayFolder": "03 Attrition",
+            "description": "One month only. Source reconciliation may be provisional."
+          },
+          {
+            "name": "Attrition Quality Status",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), SWITCH ( TRUE (),\n    COUNTROWS ( 'Fact Attrition' ) = 0, BLANK (),\n    COUNTROWS ( FILTER ( 'Fact Attrition', 'Fact Attrition'[rate_quality_status] = \"NO_PRIOR_SNAPSHOT\" ) ) > 0, \"Missing prior snapshot\",\n    COUNTROWS ( FILTER ( 'Fact Attrition', 'Fact Attrition'[rate_quality_status] = \"PROVISIONAL_SOURCE_MISMATCH\" ) ) > 0, \"Provisional - source mismatch\",\n    \"Reference matched\" ) )",
+            "formatString": "",
+            "displayFolder": "03 Attrition",
+            "description": "Company-level source warning propagated into department rates."
+          },
+          {
+            "name": "Ending Open Requisitions",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), CALCULATE ( SUM ( 'Fact Recruitment'[open_requisitions] ), KEEPFILTERS ( 'Dim Month'[month] = MAX ( 'Dim Month'[month] ) ) ) )",
+            "formatString": "#,0",
+            "displayFolder": "04 Recruitment",
+            "description": ""
+          },
+          {
+            "name": "Filled Requisitions",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), SUM ( 'Fact Recruitment'[filled_requisitions] ) )",
+            "formatString": "#,0",
+            "displayFolder": "04 Recruitment",
+            "description": ""
+          },
+          {
+            "name": "Cancelled Requisitions",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), SUM ( 'Fact Recruitment'[cancelled_requisitions] ) )",
+            "formatString": "#,0",
+            "displayFolder": "04 Recruitment",
+            "description": ""
+          },
+          {
+            "name": "Weighted Days to Fill",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), VAR Known = FILTER ( 'Fact Recruitment', 'Fact Recruitment'[filled_requisitions] > 0 && NOT ISBLANK ( 'Fact Recruitment'[avg_days_to_fill] ) )\nRETURN DIVIDE ( SUMX ( Known, 'Fact Recruitment'[weighted_days_to_fill_numerator] ), SUMX ( Known, 'Fact Recruitment'[filled_requisitions] ) ) )",
+            "formatString": "#,0.0",
+            "displayFolder": "04 Recruitment",
+            "description": "Weighted by fills with a known duration."
+          },
+          {
+            "name": "Fill Share of Closed Requisitions",
+            "expression": "DIVIDE ( [Filled Requisitions], [Filled Requisitions] + [Cancelled Requisitions] )",
+            "formatString": "0.0%;-0.0%;0.0%",
+            "displayFolder": "04 Recruitment",
+            "description": "Share of observed closed requisitions; not a funnel conversion rate."
+          },
+          {
+            "name": "Prior Month Open Requisitions",
+            "expression": "VAR M = EDATE ( MAX ( 'Dim Month'[month] ), -1 )\nRETURN CALCULATE ( [Ending Open Requisitions], REMOVEFILTERS ( 'Dim Month' ), 'Dim Month'[month] = M )",
+            "formatString": "#,0",
+            "displayFolder": "04 Recruitment",
+            "description": ""
+          },
+          {
+            "name": "Observed Employees",
+            "expression": "SUM ( 'Fact Retention'[employee_count] )",
+            "formatString": "#,0",
+            "displayFolder": "05 Retention",
+            "description": "Historical profile population at observation endpoint; not monthly headcount."
+          },
+          {
+            "name": "Exited Employees",
+            "expression": "CALCULATE ( [Observed Employees], KEEPFILTERS ( 'Fact Retention'[exited] = TRUE () ) )",
+            "formatString": "#,0",
+            "displayFolder": "05 Retention",
+            "description": ""
+          },
+          {
+            "name": "Active Employees",
+            "expression": "CALCULATE ( [Observed Employees], KEEPFILTERS ( 'Fact Retention'[exited] = FALSE () ) )",
+            "formatString": "#,0",
+            "displayFolder": "05 Retention",
+            "description": ""
+          },
+          {
+            "name": "Average Engagement Score",
+            "expression": "DIVIDE ( SUM ( 'Fact Retention'[engagement_sum] ), SUM ( 'Fact Retention'[engagement_count] ) )",
+            "formatString": "0.00",
+            "displayFolder": "05 Retention",
+            "description": "Latest observed/pre-exit survey; excludes missing values."
+          },
+          {
+            "name": "Average Performance Rating",
+            "expression": "DIVIDE ( SUM ( 'Fact Retention'[performance_sum] ), SUM ( 'Fact Retention'[performance_count] ) )",
+            "formatString": "0.00",
+            "displayFolder": "05 Retention",
+            "description": ""
+          },
+          {
+            "name": "Average Prior 365d Absence Days",
+            "expression": "DIVIDE ( SUM ( 'Fact Retention'[absence_days_sum] ), [Observed Employees] )",
+            "formatString": "#,0.0",
+            "displayFolder": "05 Retention",
+            "description": ""
+          },
+          {
+            "name": "Headcount YoY %",
+            "expression": "VAR M = EDATE ( MAX ( 'Dim Month'[month] ), -12 )\nVAR Prior = CALCULATE ( [Ending Headcount], REMOVEFILTERS ( 'Dim Month' ), 'Dim Month'[month] = M )\nRETURN DIVIDE ( [Headcount YoY Change], Prior )",
+            "formatString": "0.0%;-0.0%;0.0%",
+            "displayFolder": "06 Time Intelligence",
+            "description": ""
+          },
+          {
+            "name": "YTD Hires",
+            "expression": "VAR M = MAX ( 'Dim Month'[month] )\nRETURN CALCULATE ( [Hires], FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[year] = YEAR ( M ) && 'Dim Month'[month] <= M ) )",
+            "formatString": "#,0",
+            "displayFolder": "06 Time Intelligence",
+            "description": ""
+          },
+          {
+            "name": "YTD Terminations",
+            "expression": "VAR M = MAX ( 'Dim Month'[month] )\nRETURN CALCULATE ( [Terminations], FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[year] = YEAR ( M ) && 'Dim Month'[month] <= M ) )",
+            "formatString": "#,0",
+            "displayFolder": "06 Time Intelligence",
+            "description": ""
+          },
+          {
+            "name": "Period Attrition %",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), VAR Months = VALUES ( 'Dim Month'[month] )\nVAR ValidMonths = FILTER ( Months, NOT ISBLANK ( CALCULATE ( [Monthly Average Headcount] ) ) && CALCULATE ( [Monthly Average Headcount] ) > 0 )\nVAR N = COUNTROWS ( Months )\nVAR Span = DATEDIFF ( MIN ( 'Dim Month'[month] ), MAX ( 'Dim Month'[month] ), MONTH ) + 1\nRETURN IF ( N > 0 && N = Span && COUNTROWS ( ValidMonths ) = N,\n    DIVIDE ( [Terminations], AVERAGEX ( ValidMonths, CALCULATE ( [Monthly Average Headcount] ) ) ) ) )",
+            "formatString": "0.0%;-0.0%;0.0%",
+            "displayFolder": "06 Time Intelligence",
+            "description": "Selected contiguous period exits divided by mean monthly workforce; blank if any month lacks valid denominator."
+          },
+          {
+            "name": "Rolling 12M Attrition %",
+            "expression": "VAR M = MAX ( 'Dim Month'[month] )\nVAR WindowMonths = FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[month] > EDATE ( M, -12 ) && 'Dim Month'[month] <= M )\nRETURN IF ( COUNTROWS ( WindowMonths ) = 12, CALCULATE ( [Period Attrition %], WindowMonths ) )",
+            "formatString": "0.0%;-0.0%;0.0%",
+            "displayFolder": "06 Time Intelligence",
+            "description": "Requires twelve consecutive valid monthly denominators."
+          },
+          {
+            "name": "Rolling 12M Terminations",
+            "expression": "VAR M = MAX ( 'Dim Month'[month] )\nVAR WindowMonths = FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[month] > EDATE ( M, -12 ) && 'Dim Month'[month] <= M )\nRETURN IF ( COUNTROWS ( WindowMonths ) = 12, CALCULATE ( [Terminations], WindowMonths ) )",
+            "formatString": "#,0",
+            "displayFolder": "06 Time Intelligence",
+            "description": ""
+          },
+          {
+            "name": "YTD Filled Requisitions",
+            "expression": "VAR M = MAX ( 'Dim Month'[month] )\nRETURN CALCULATE ( [Filled Requisitions], FILTER ( ALL ( 'Dim Month' ), 'Dim Month'[year] = YEAR ( M ) && 'Dim Month'[month] <= M ) )",
+            "formatString": "#,0",
+            "displayFolder": "06 Time Intelligence",
+            "description": ""
+          },
+          {
+            "name": "Snapshot Reconciliation Difference",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Department' ) || ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), VAR LastMonth = MAX ( 'Dim Month'[month] )\nRETURN CALCULATE ( SUM ( 'Fact Reconciliation'[headcount_difference] ), KEEPFILTERS ( 'Dim Month'[month] = LastMonth ) ) )",
+            "formatString": "#,0",
+            "displayFolder": "07 Data Quality",
+            "description": "Company-wide; blank when department, location or level is filtered."
+          },
+          {
+            "name": "Reconciliation Review Months",
+            "expression": "IF ( ISCROSSFILTERED ( 'Dim Department' ) || ISCROSSFILTERED ( 'Dim Location' ) || ISCROSSFILTERED ( 'Dim Level' ), BLANK (), COALESCE ( CALCULATE ( DISTINCTCOUNT ( 'Fact Reconciliation'[month] ), KEEPFILTERS ( 'Fact Reconciliation'[reconciliation_status] = \"REVIEW\" ) ), 0 ) )",
+            "formatString": "#,0",
+            "displayFolder": "07 Data Quality",
+            "description": ""
+          },
+          {
+            "name": "Latest Pipeline Run ID",
+            "expression": "MAXX ( ALL ( 'Pipeline Runs' ), 'Pipeline Runs'[pipeline_run_id] )",
+            "formatString": "#,0",
+            "displayFolder": "07 Data Quality",
+            "description": ""
+          },
+          {
+            "name": "Latest Pipeline Status",
+            "expression": "VAR R = [Latest Pipeline Run ID]\nRETURN CALCULATE ( SELECTEDVALUE ( 'Pipeline Runs'[status] ), REMOVEFILTERS ( 'Pipeline Runs' ), 'Pipeline Runs'[pipeline_run_id] = R )",
+            "formatString": "",
+            "displayFolder": "07 Data Quality",
+            "description": ""
+          },
+          {
+            "name": "Latest Quality PASS",
+            "expression": "VAR R = [Latest Pipeline Run ID]\nVAR CheckCount = CALCULATE ( COUNTROWS ( 'Quality Results' ), REMOVEFILTERS ( 'Pipeline Runs' ), REMOVEFILTERS ( 'Quality Results' ), 'Quality Results'[pipeline_run_id] = R )\nRETURN IF ( NOT ISBLANK ( R ) && CheckCount > 0, COALESCE ( CALCULATE ( COUNTROWS ( 'Quality Results' ), REMOVEFILTERS ( 'Pipeline Runs' ), REMOVEFILTERS ( 'Quality Results' ), 'Quality Results'[pipeline_run_id] = R, 'Quality Results'[status] = \"PASS\" ), 0 ) )",
+            "formatString": "#,0",
+            "displayFolder": "07 Data Quality",
+            "description": "Blank when the latest run has no completed quality checks; zero only after checks exist."
+          },
+          {
+            "name": "Latest Quality REVIEW",
+            "expression": "VAR R = [Latest Pipeline Run ID]\nVAR CheckCount = CALCULATE ( COUNTROWS ( 'Quality Results' ), REMOVEFILTERS ( 'Pipeline Runs' ), REMOVEFILTERS ( 'Quality Results' ), 'Quality Results'[pipeline_run_id] = R )\nRETURN IF ( NOT ISBLANK ( R ) && CheckCount > 0, COALESCE ( CALCULATE ( COUNTROWS ( 'Quality Results' ), REMOVEFILTERS ( 'Pipeline Runs' ), REMOVEFILTERS ( 'Quality Results' ), 'Quality Results'[pipeline_run_id] = R, 'Quality Results'[status] = \"REVIEW\" ), 0 ) )",
+            "formatString": "#,0",
+            "displayFolder": "07 Data Quality",
+            "description": "Blank when the latest run has no completed quality checks; zero only after checks exist."
+          },
+          {
+            "name": "Latest Quality FAIL",
+            "expression": "VAR R = [Latest Pipeline Run ID]\nVAR CheckCount = CALCULATE ( COUNTROWS ( 'Quality Results' ), REMOVEFILTERS ( 'Pipeline Runs' ), REMOVEFILTERS ( 'Quality Results' ), 'Quality Results'[pipeline_run_id] = R )\nRETURN IF ( NOT ISBLANK ( R ) && CheckCount > 0, COALESCE ( CALCULATE ( COUNTROWS ( 'Quality Results' ), REMOVEFILTERS ( 'Pipeline Runs' ), REMOVEFILTERS ( 'Quality Results' ), 'Quality Results'[pipeline_run_id] = R, 'Quality Results'[status] = \"FAIL\" ), 0 ) )",
+            "formatString": "#,0",
+            "displayFolder": "07 Data Quality",
+            "description": "Blank when the latest run has no completed quality checks; zero only after checks exist."
+          }
+        ],
+        "partitions": [
+          {
+            "name": "_Measures",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #table(type table [Placeholder = Int64.Type], {{1}})",
+                "in",
+                "    Source"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "Fact_Workforce_month",
+        "fromTable": "Fact Workforce",
+        "fromColumn": "month",
+        "toTable": "Dim Month",
+        "toColumn": "month",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Fact_Planning_month",
+        "fromTable": "Fact Planning",
+        "fromColumn": "month",
+        "toTable": "Dim Month",
+        "toColumn": "month",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Fact_Attrition_month",
+        "fromTable": "Fact Attrition",
+        "fromColumn": "month",
+        "toTable": "Dim Month",
+        "toColumn": "month",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Fact_Recruitment_month",
+        "fromTable": "Fact Recruitment",
+        "fromColumn": "month",
+        "toTable": "Dim Month",
+        "toColumn": "month",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Fact_Reconciliation_month",
+        "fromTable": "Fact Reconciliation",
+        "fromColumn": "month",
+        "toTable": "Dim Month",
+        "toColumn": "month",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Fact_Workforce_department_id",
+        "fromTable": "Fact Workforce",
+        "fromColumn": "department_id",
+        "toTable": "Dim Department",
+        "toColumn": "department_id",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Fact_Planning_department_id",
+        "fromTable": "Fact Planning",
+        "fromColumn": "department_id",
+        "toTable": "Dim Department",
+        "toColumn": "department_id",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Fact_Attrition_department_id",
+        "fromTable": "Fact Attrition",
+        "fromColumn": "department_id",
+        "toTable": "Dim Department",
+        "toColumn": "department_id",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Fact_Recruitment_department_id",
+        "fromTable": "Fact Recruitment",
+        "fromColumn": "department_id",
+        "toTable": "Dim Department",
+        "toColumn": "department_id",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Fact_Workforce_location_id",
+        "fromTable": "Fact Workforce",
+        "fromColumn": "location_id",
+        "toTable": "Dim Location",
+        "toColumn": "location_id",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Fact_Workforce_level",
+        "fromTable": "Fact Workforce",
+        "fromColumn": "level",
+        "toTable": "Dim Level",
+        "toColumn": "level",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Fact_Retention_current_department_id",
+        "fromTable": "Fact Retention",
+        "fromColumn": "current_department_id",
+        "toTable": "Dim Department",
+        "toColumn": "department_id",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Quality_Results_pipeline_run_id",
+        "fromTable": "Quality Results",
+        "fromColumn": "pipeline_run_id",
+        "toTable": "Pipeline Runs",
+        "toColumn": "pipeline_run_id",
+        "crossFilteringBehavior": "oneDirection"
+      }
+    ]
+  }
+}

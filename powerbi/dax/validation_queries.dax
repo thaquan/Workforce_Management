@@ -1,0 +1,40 @@
+// Run these EVALUATE statements in DAX Query View individually AFTER refresh.
+// These are expected baselines, not yet evidence of live DAX execution.
+
+EVALUATE
+CALCULATETABLE (
+    ROW ( "HC", [Ending Headcount], "Plan", [Planned Headcount],
+          "Gap", [Headcount Gap], "FTE", [Ending FTE] ),
+    'Dim Month'[month] = DATE ( 2025, 12, 1 )
+)
+// Expected: 999, 1079, -80, 968.6
+
+EVALUATE
+CALCULATETABLE (
+    ROW ( "Ending HC", [Ending Headcount] ),
+    'Dim Month'[year] = 2025
+)
+// Expected: 999 (not sum across months)
+
+EVALUATE
+CALCULATETABLE (
+    ROW ( "HC", [Ending Headcount], "Monthly Attrition", [Monthly Attrition %],
+          "Rolling 12M", [Rolling 12M Attrition %] ),
+    'Dim Month'[month] = DATE ( 2023, 1, 1 )
+)
+// Expected: 622, BLANK, BLANK
+
+EVALUATE
+CALCULATETABLE (
+    ROW ( "Difference", [Snapshot Reconciliation Difference] ),
+    'Dim Month'[month] = DATE ( 2025, 6, 1 )
+)
+// Expected: 98
+
+EVALUATE
+ROW ( "Review months", [Reconciliation Review Months],
+      "Observed Employees", [Observed Employees],
+      "Exited Employees", [Exited Employees],
+      "Latest Status", [Latest Pipeline Status],
+      "Latest FAIL", [Latest Quality FAIL] )
+// Expected historical values: 33, 1200, 206; latest audit values depend on the run.
