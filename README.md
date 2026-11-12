@@ -1,111 +1,158 @@
-# HR Workforce Intelligence — Phases 1 & 2
+# HR Workforce Intelligence
 
-End-to-End HR Workforce Planning & Attrition Analytics portfolio project.
+[![Quality Gates (Synthetic CI)](https://github.com/thaquan/Workforce_Management/actions/workflows/quality-ci.yml/badge.svg)](https://github.com/thaquan/Workforce_Management/actions/workflows/quality-ci.yml)
 
-## Scope and reproducibility
-- Source workbook: `data/raw/HR_Workforce_Planning_Attrition_Dataset.xlsx` (keep local; do not publish raw HR data).
-- Phase 1 covers source profiling, relationship/grain design, data quality, KPI definitions and Phase 2 acceptance criteria.
-- Run from repository root: `python src/phase1/phase1_profiler.py` (Python 3.10+, standard library only).
-- Output reports: `reports/phase1/`; design documents: `docs/phase1/`.
+**End-to-end Data Engineering + Power BI portfolio project** for workforce planning, attrition, retention, recruitment operations, and data quality.
 
-## Verified baseline
-- 12 sheets, 29,728 rows excluding headers; 1,200 employee records; 36 monthly periods (2023-01 to 2025-12).
-- 39 automated PASS checks and four REVIEW items in `reports/phase1/quality_checks.csv`.
-- December 2025: snapshot HC=999 / FTE=968.6, planned HC=1079 / budget FTE=1053.8; 994 active Employee profiles.
+**Status:** Phases **1–5 implemented**. Six Power BI report pages and 51 DAX measures have been validated locally. GitHub Actions uses **invented synthetic HR data**; the real HR workbook and imported employee records are not in this repository.
 
-## Recommended stack (future phases)
-Python -> PostgreSQL (raw/staging/marts) -> dbt Core -> Power BI. Add Dagster only after loading and dbt transformations work.
+> This project is a historical workforce analytics case study, **not a live HR system**. Its available business-data period is January 2023–December 2025.
 
-## Documents
-1. `docs/phase1/01_business_requirements.md`
-2. `docs/phase1/02_data_model.md`
-3. `docs/phase1/03_kpi_definitions.md`
-4. `docs/phase1/04_quality_and_mapping.md`
-5. `docs/phase1/05_phase2_readiness.md`
-6. `docs/phase1/hr_warehouse_erd.mmd`
+## What the project solves
 
-**Data policy:** Employee, salary and review fields may be sensitive. Publish synthetic/anonymized samples or aggregated visuals only; verify license and permission.
+HR stakeholders need a consistent way to monitor staffing plans, headcount and FTE, employee exits, recruitment throughput and data reliability. This project turns a multi-sheet workbook into a documented and tested PostgreSQL/dbt analytics warehouse, and exposes business metrics through a six-page Power BI semantic model and report.
 
-## Phase 1 review / fixes (2026-11-07)
+**Selected source-baseline facts:**
 
-The source Excel is immutable. See [review decisions](docs/phase1/06_review_resolutions.md).
-- 33 of 36 snapshot months differ from employee-as-of headcount; June 2025 has a +98 discrepancy equal to 98 June termination events in departments D002–D005.
-- July 2025 targets for these four departments switch to post-restructuring planning.
-- A full **derived calendar** for 2018-01-05 through 2025-12-31 (2,918 days) is generated locally under `data/processed/`. The original DimDate is unchanged.
-- Salary-budget variance remains **blocked** pending budget currency/period/coverage confirmation; internal transfers are **unsupported** by the source.
-- The profiler redacts all column example values in public reports.
+| Metric | Verified value |
+|---|---:|
+| Source data | 12 sheets / 29,728 records |
+| Employees in source | 1,200 |
+| Workforce reporting period | 36 months (2023-01 through 2025-12) |
+| December 2025 actual vs planned headcount | 999 vs 1,079 (**gap −80**) |
+| December 2025 actual vs budgeted FTE | 968.6 vs 1,053.8 |
+| Historical headcount reconciliation requiring review | **33 of 36 months** |
+| Largest noted discrepancy (June 2025) | **+98** snapshot minus employee-as-of |
 
-**Reproduce the entire review on Windows:**
+These numbers reflect the supplied *historical* dataset; they are **not current workforce metrics** or independently validated real-world employment figures.
 
-```powershell
-python src/phase1/run_phase1.py
+## Architecture
+
+```mermaid
+flowchart TD
+    A["HR source workbook\n(local, private)"] --> B["Python ingestion\ncontracts · idempotency · audit"]
+    B --> C[("PostgreSQL\nraw schema")]
+    C --> D["dbt Core / PostgreSQL\n12 staging + 4 intermediate views"]
+    D --> E[("Analytics warehouse\n5 dimensions · 8 facts · 7 marts")]
+    E --> F["Power BI semantic model\n51 DAX measures"]
+    F --> G["Power BI report\n6 analytical pages"]
+    C --> H["Phase 4 quality gates\nand pipeline audit"]
+    E --> H
+    H --> F
+    I["GitHub Actions\nsynthetic-only CI"] -. "isolated PostgreSQL test DB" .-> C
 ```
 
-This runs both profiling scripts and six automated regression tests (Python standard library only). Published aggregate reports are in `reports/phase1/`. Source workbook and derived employee-level files remain excluded from Git.
+**Stack:** Python 3.13 · PostgreSQL 17 · Docker Compose · dbt Core 1.12 / dbt-postgres 1.11 · SQL · Power BI Desktop/Service · DAX · GitHub Actions · Git.
 
-## Phase 2 — PostgreSQL foundation (Session 1)
+The local production-like pipeline remains inexpensive: no mandatory cloud warehouse, managed orchestrator or paid monitoring subscription. The published Power BI Service report is managed separately by the project owner; source control does **not** automatically refresh or republish it.
 
-The local PostgreSQL infrastructure is defined in [`compose.yaml`](compose.yaml), with the idempotent [SQL bootstrap](sql/00_bootstrap.sql) and [setup instructions](docs/phase2/01_environment_setup.md).
+## Delivered phases
 
-Run `docker compose up -d postgres` after configuring a private `.env`. The service binds only to `127.0.0.1:5433`. Phase 2 session 1 creates schemas and audit tables; it does **not** load HR employee rows.
+| Phase | Delivered | Implementation / evidence |
+|---|---|---|
+| **1 — Source profiling** | 12-sheet quality review, ERD, grain and KPI mapping | [Phase 1 documents](docs/phase1/), [quality decisions](docs/phase1/06_review_resolutions.md) |
+| **2 — Ingestion** | 12 typed raw tables, transactional loads, SHA-256 audit, idempotency and recovery | [Phase 2 handoff](docs/phase2/README.md), [code review](docs/phase2/04_code_review_fixes.md) |
+| **3 — Analytics warehouse** | 36 dbt models and **83 data tests** (full-data baseline); generated lineage | [Phase 3 handoff](docs/phase3/README.md), [KPI contracts](docs/phase3/02_kpi_semantics.md) |
+| **4 — Quality & operations** | **18 executable quality checks**, persisted audit, safe rollback tests and synthetic CI | [Phase 4 handoff](docs/phase4/README.md), [acceptance](reports/phase4/acceptance_report.md) |
+| **5 — Power BI** | **51 DAX measures**, six PBIR dashboard pages, data/UX regression tests | [Power BI setup](powerbi/README.md), [design system](docs/phase5/00_report_experience_blueprint.md), [DAX acceptance](reports/phase5/dax_live_acceptance.md) |
 
-Smoke and regression commands are documented in `docs/phase2/01_environment_setup.md`. The multi-session task plan and Agent Verification handoffs are stored outside the repository at `D:\\codex-free-master\\TASK_PROCESS\\FirstTask`.
+### Six Power BI report pages
 
-## Phase 2 — Raw data ingestion (completed locally)
+| Page | Business question | Main visualization |
+|---|---|---|
+| **01 — Executive Overview** | What is the overall workforce position? | Headcount trajectory, department gap ranking, scorecard |
+| **02 — Workforce Planning** | Which departments are above/below workforce plan? | Waterfall, planned-capacity treemap, attainment gauge |
+| **03 — Attrition Analysis** | When and where do recorded exits cluster? | Department×month rate heatmap, hires/exits, exit composition |
+| **04 — Retention & Engagement** | How do observed Active/Exited cohorts differ? | Department bubble scatter, descriptive cohort comparisons |
+| **05 — Recruitment Performance** | How are hiring throughput, backlog and speed changing? | Closed-request area, days-to-fill bubble scatter, department backlog |
+| **06 — Data Quality & Trust** | Did the pipeline run and can its outputs be trusted? | Quality status strip, reconciliation trend, audit/quality register |
 
-Phase 2 now provides **12 typed PostgreSQL raw tables / 29,728 source records**, transactional full-snapshot loading, file SHA-256 audit, source/schema validation, idempotent repeat runs with full content comparison, and rollback/recovery tests. See [Phase 2 handoff](docs/phase2/README.md).
+Pages share the **Navy–Teal identity and navigation shell** but deliberately use different content layouts and visual families. See [the complete Power BI design blueprint](docs/phase5/00_report_experience_blueprint.md). The editable PBIP entry point is **[`powerbi/WorkforceIntelligence.pbip`](powerbi/WorkforceIntelligence.pbip)**.
 
-The [Phase 2 code review](docs/phase2/04_code_review_fixes.md) documents fixes for same-row-count data tampering, audit status after report failures, source checksum changes while reading, and existing-table schema drift.
+## Reproduce locally with an authorized source workbook
 
-```powershell
-python -m pip install -r requirements.txt
-docker compose up -d postgres
-python -m src.phase2.ingest
-python -m unittest discover -s tests -p "test_*.py" -v
-```
+> **Important:** The HR workbook is intentionally absent from Git. Running the *full real-data pipeline* requires an authorized local copy of `HR_Workforce_Planning_Attrition_Dataset.xlsx`. Do not upload private HR data, connection credentials, or Power BI import caches to this repository.
 
-Use `$env:HR_INTEGRATION_TESTS="1"` to enable live database tests. Raw HR data, local credentials and generated employee-level artifacts remain excluded from Git. Known source limitations from Phase 1 are still visible; no raw data was rewritten to hide them.
-
-## Phase 3 — dbt Analytics Warehouse
-
-Phase 3 introduces a dedicated, locally reproducible dbt Core project under
-[`dbt_hr/`](dbt_hr), using **12 staging views, four intermediate views, five
-dimensions, eight fact tables and seven analytics marts**. It includes 83
-dbt tests, Python model checks, and generated dbt lineage/catalog.
-
-See the [Phase 3 handoff](docs/phase3/README.md), [KPI and grain
-contracts](docs/phase3/02_kpi_semantics.md), [runbook](docs/phase3/03_runbook.md)
-and [acceptance report](reports/phase3/acceptance_report.md).
+Prerequisites: **Python 3.13**, **Docker Desktop** with Compose, and **Power BI Desktop** (Windows). From the repository root:
 
 ```powershell
+git clone https://github.com/thaquan/Workforce_Management.git
+cd Workforce_Management
+
+Copy-Item .env.example .env
+# Edit .env locally: configure POSTGRES_PASSWORD and related PostgreSQL values.
+# Keep .env private and do not commit it.
+
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt -r requirements-dbt.txt
-python -m src.phase3.dbt_runner debug
-python -m src.phase3.dbt_runner build
+
+docker compose up -d postgres
+# Place your authorized workbook at:
+# data/raw/HR_Workforce_Planning_Attrition_Dataset.xlsx
+
+python -m src.phase4.pipeline
+python -m src.phase4.health
 python -m src.phase3.dbt_runner docs generate
 ```
 
-Power BI reporting is a future phase. The source snapshot discrepancy remains
-explicitly flagged; salary-budget variance and internal mobility are not
-represented as validated KPIs.
+The Phase 4 runner performs **Python ingestion → dbt build/tests → quality gates → audited status**. To inspect a previous warehouse without reloading source data, run `python -m src.phase4.pipeline --quality-only`. dbt docs can be served with `python -m src.phase3.dbt_runner docs serve --port 8080` (open `http://localhost:8080`).
 
-## Phase 4 — Quality Gates, Monitoring and Synthetic CI
+Open `powerbi/WorkforceIntelligence.pbip` in Power BI Desktop and configure/refresh its PostgreSQL data source (normally `127.0.0.1:5433`, database `workforce_dw`; credentials are private). The PBIP source includes the report and semantic model definition, **not** cached employee data. Power BI Service refresh from local PostgreSQL requires appropriate gateway/connectivity and refresh configuration; publishing the report alone does not configure automatic refresh.
 
-Phase 4 adds [18 quality checks](src/phase4/quality_contract.py),
-an audited [end-to-end pipeline runner](src/phase4/pipeline.py),
-[PostgreSQL monitoring DDL](sql/04_monitoring.sql),
-an isolated [synthetic CI fixture](src/phase4/synthetic_fixture.py),
-and [GitHub Actions workflow](.github/workflows/quality-ci.yml).
+For source profiling alone, use `python src/phase1/run_phase1.py`. The detailed setup, modeling and troubleshooting instructions live in [`docs/phase2/`](docs/phase2/), [`docs/phase3/`](docs/phase3/) and [`docs/phase4/`](docs/phase4/).
 
-See [Phase 4 documentation](docs/phase4/README.md) and
-[acceptance evidence](reports/phase4/acceptance_report.md). Local full-run
-tests verify 36 dbt models plus 83 data tests; the synthetic CI verifies
-36 models plus 80 non-baseline tests without using HR employee data.
+## Quality assurance and GitHub Actions
+
+The [Quality Gates (Synthetic CI) workflow](.github/workflows/quality-ci.yml) executes on pushes to `main` and on pull requests, using a short-lived **PostgreSQL 17 service with only invented fixture rows**:
+
+1. Install pinned Python/dbt packages and run Phase 2–4 static checks plus **all Phase 5 offline tests** (semantic model, six PBIR pages and privacy guardrails).
+2. Seed the isolated synthetic source database.
+3. Build **36 dbt models + 80 non-baseline data tests**; workbook-specific baseline tests are intentionally excluded.
+4. Run the auditable Phase 4 quality gates and destructive/recovery regression tests **only against the isolated synthetic database**.
+5. Generate dbt catalog/lineage docs. A failing test blocks the CI job.
+
+The GitHub runner installs dbt in its Python environment and invokes the **`dbt` CLI directly**. The local `src.phase3.dbt_runner` is for a project `.venv` and is not called from CI. No production/real workbook access is required for synthetic CI. The workflow badge at the top reflects the latest GitHub run; successful local testing does not by itself establish a successful hosted run.
+
+To test Power BI source definitions without a live Desktop session:
 
 ```powershell
-python -m src.phase4.pipeline
-python -m src.phase4.health
-python -m src.phase4.pipeline --quality-only
+python -m unittest discover -s tests -p "test_phase5_*.py" -v
 ```
 
-The four known data-quality REVIEW cases are retained. This local
-monitoring layer does not schedule jobs or send automatic alerts.
+The optional **live DAX smoke test** (`python -m src.phase5.live_dax_smoke`) requires the corresponding Power BI Desktop model and connected modeling MCP; it is **not** executed on GitHub-hosted runners.
+
+## Data trust and limitations
+
+The project keeps data-quality constraints visible rather than silently rewriting source facts:
+
+- **33/36 months** have a mismatch between workforce snapshot headcount and an employee-as-of reconciliation. June 2025 differs by **+98** and December 2025 by **+5**. Attrition rates are flagged **provisional**; January 2023 is `BLANK` because the preceding month is unavailable.
+- The original source date dimension is shorter than the employee history; the warehouse derives a complete calendar without editing raw data.
+- Salary-budget period/currency/coverage have not been verified. **Salary-budget variance is deliberately disabled**.
+- No historical department transfer events or effective-dated department assignments are provided. The report does **not** invent internal-mobility trends or a historical SCD Type 2 dimension.
+- Recruitment open requisitions are a **latest-period stock**; filled/cancelled requisitions are **period flows**. Retention cohort comparisons are observational, **not causal**.
+- Pipeline `SUCCEEDED` means its technical checks completed, **not** that all historical source limitations disappeared. The Power BI audit page is an **Import-mode snapshot**, not a live monitoring service.
+
+## Repository layout
+
+```text
+.github/workflows/       Synthetic-only CI
+src/phase1/              Source profiling
+src/phase2/              Validated/idempotent ingestion
+src/phase3/              dbt runner and staging generation
+src/phase4/              Quality gates, audit and synthetic fixture
+src/phase5/              Power BI semantic-model and report generators
+dbt_hr/                  dbt project: sources, staging, marts, tests
+sql/                     PostgreSQL bootstrap and monitoring DDL
+powerbi/                 PBIP/PBIR source, DAX measures and design theme
+tests/                   Unit, integration, recovery and report tests
+docs/phase1..phase5/     Architecture, semantics and runbooks
+reports/phase1..phase5/  Non-sensitive verification evidence
+data/raw/                LOCAL ONLY; intentionally ignored by Git
+```
+
+## Next steps
+
+The initial analytics platform and dashboard are complete. Planned improvements (not yet implemented) are: (1) polish screenshots and portfolio release metadata; (2) add **Dagster OSS** orchestration for scheduling, retries and dependencies; (3) demonstrate incremental loads and benchmark larger **synthetic Parquet/DuckDB** workloads; (4) provide clearly labeled Power BI What-if scenarios. Cloud migration is **optional**, not a requirement for reproducing the project.
+
+**Privacy:** Do not commit `.env`, credentials, original HR workbooks, employee-level extracts, `.pbi` import caches, or generated database files. The GitHub Actions fixture uses fictional IDs and values. Any public demo or screenshot must use authorized aggregated information or synthetic data only.
