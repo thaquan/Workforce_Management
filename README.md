@@ -8,6 +8,14 @@
 
 > This project is a historical workforce analytics case study, **not a live HR system**. Its available business-data period is January 2023–December 2025.
 
+## Dashboard preview and portfolio
+
+[![Executive Overview — six-page Workforce Intelligence report](docs/portfolio/images/01-executive-overview.png)](docs/portfolio/README.md)
+
+**[Explore all six dashboard pages](docs/portfolio/README.md)** · [Full project case study](docs/portfolio/case_study.md) · [Architecture and data trust](docs/portfolio/architecture.md) · [Demo walkthrough](docs/portfolio/demo_walkthrough.md) · [CV bullets](docs/portfolio/cv_bullets.md)
+
+The screenshot gallery contains **aggregate, historical Power BI Desktop views**, not employee-level data. The owner has published a Power BI Service version, but a permission-reviewed public URL has not been supplied to this repository; no public report link is invented here.
+
 ## What the project solves
 
 HR stakeholders need a consistent way to monitor staffing plans, headcount and FTE, employee exits, recruitment throughput and data reliability. This project turns a multi-sheet workbook into a documented and tested PostgreSQL/dbt analytics warehouse, and exposes business metrics through a six-page Power BI semantic model and report.
@@ -153,6 +161,8 @@ data/raw/                LOCAL ONLY; intentionally ignored by Git
 
 ## Next steps
 
-The initial analytics platform and dashboard are complete. Planned improvements (not yet implemented) are: (1) polish screenshots and portfolio release metadata; (2) add **Dagster OSS** orchestration for scheduling, retries and dependencies; (3) demonstrate incremental loads and benchmark larger **synthetic Parquet/DuckDB** workloads; (4) provide clearly labeled Power BI What-if scenarios. Cloud migration is **optional**, not a requirement for reproducing the project.
+The initial analytics platform and dashboard are complete. The six-page screenshot gallery, project case study and interview/demo documentation are available under [docs/portfolio/](docs/portfolio/README.md).
+
+**Planned, not yet implemented:** (1) [Dagster OSS orchestration](docs/phase7/dagster_extension_plan.md) for scheduling, retries and dependencies; (2) incremental loads and larger **synthetic Parquet/DuckDB** benchmarks; (3) clearly labeled Power BI What-if scenarios. Cloud migration is **optional**, not a requirement for reproducing the project. No GitHub Release or version tag is required for this repository's portfolio documentation.
 
 **Privacy:** Do not commit `.env`, credentials, original HR workbooks, employee-level extracts, `.pbi` import caches, or generated database files. The GitHub Actions fixture uses fictional IDs and values. Any public demo or screenshot must use authorized aggregated information or synthetic data only.
