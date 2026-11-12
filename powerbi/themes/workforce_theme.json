@@ -1,0 +1,33 @@
+{
+  "name": "Workforce Intelligence Navy Teal",
+  "dataColors": [
+    "#087F8C",
+    "#102A43",
+    "#D97706",
+    "#627D98",
+    "#3E9BA5",
+    "#9AA5B1",
+    "#DC2626",
+    "#46A69B"
+  ],
+  "background": "#FFFFFF",
+  "foreground": "#102A43",
+  "tableAccent": "#087F8C",
+  "good": "#087F8C",
+  "neutral": "#D97706",
+  "bad": "#DC2626",
+  "textClasses": {
+    "title": {
+      "fontFace": "Segoe UI Semibold",
+      "color": "#102A43"
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "color": "#627D98"
+    },
+    "callout": {
+      "fontFace": "Segoe UI Semibold",
+      "color": "#102A43"
+    }
+  }
+}

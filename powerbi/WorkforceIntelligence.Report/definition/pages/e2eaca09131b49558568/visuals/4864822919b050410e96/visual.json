@@ -1,0 +1,105 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "4864822919b050410e96",
+  "position": {
+    "x": 755,
+    "y": 484,
+    "z": 2000,
+    "height": 219,
+    "width": 499,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            },
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim Department"
+                    }
+                  },
+                  "Property": "department"
+                }
+              },
+              "queryRef": "Dim Department.department",
+              "nativeQueryRef": "department"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Ending Headcount"
+                }
+              },
+              "queryRef": "_Measures.Ending Headcount",
+              "nativeQueryRef": "Ending Headcount"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Planned Headcount"
+                }
+              },
+              "queryRef": "_Measures.Planned Headcount",
+              "nativeQueryRef": "Planned Headcount"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Headcount Gap"
+                }
+              },
+              "queryRef": "_Measures.Headcount Gap",
+              "nativeQueryRef": "Headcount Gap"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
