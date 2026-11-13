@@ -45,9 +45,10 @@ jobs:
             requirements-dbt.txt
             requirements-dagster.txt
             requirements-phase8.txt
+            requirements-phase9.txt
       - name: Install pinned tools
         run: |
-          python -m pip install -r requirements.txt -r requirements-dbt.txt -r requirements-dagster.txt -r requirements-phase8.txt
+          python -m pip install -r requirements.txt -r requirements-dbt.txt -r requirements-dagster.txt -r requirements-phase8.txt -r requirements-phase9.txt
           dbt --version
       - name: Static source, contract and safety checks
         run: |
@@ -61,6 +62,10 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_phase7_*.py' -v
       - name: Phase 8 offline incremental and Parquet checks
         run: python -m unittest discover -s tests -p 'test_phase8_incremental.py' -v
+      - name: Phase 9 offline benchmark correctness and safety
+        run: python -m unittest discover -s tests -p 'test_phase9_*.py' -v
+      - name: Phase 9 DuckDB and Parquet synthetic smoke (no PostgreSQL)
+        run: python -m src.phase9.run --mode duckdb --rows 10000 --repeats 2
       - name: Create isolated synthetic source tables
         run: python -m src.phase4.synthetic_fixture
       - name: Build dbt models and generic tests (exclude real workbook baselines)

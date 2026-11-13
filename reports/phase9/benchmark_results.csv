@@ -1,0 +1,5 @@
+baseline_rows,final_rows,changed_rows,parquet_zstd_bytes,parquet_generation_ms,duckdb_query_median_ms,duckdb_query_p95_ms,postgres_full_median_ms,postgres_incremental_median_ms,postgres_speed_ratio,query_parity
+1000,1010,60,5925,4.22,5.953,6.653,8.793,6.407,1.372,PASS (count and sums)
+100000,101000,6000,329588,35.609,6.703,6.889,,,,DuckDB only
+500000,505000,30000,1480218,167.619,13.262,13.49,,,,DuckDB only
+1000000,1010000,60000,2916059,378.051,21.101,21.976,,,,DuckDB only

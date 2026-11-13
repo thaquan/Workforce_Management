@@ -119,7 +119,8 @@ The [Quality Gates (Synthetic CI) workflow](.github/workflows/quality-ci.yml) ex
 3. Build **36 dbt models + 80 non-baseline data tests**; workbook-specific baseline tests are intentionally excluded.
 4. Run the auditable Phase 4 quality gates and destructive/recovery regression tests **only against the isolated synthetic database**.
 5. Verify Dagster Phase 7 and Phase 8 offline contracts plus isolated PostgreSQL orchestration and transactional incremental recovery.
-6. Generate dbt catalog/lineage docs. A failing test blocks CI.
+6. Run Phase 9 DuckDB/Parquet correctness checks and small offline synthetic benchmark smoke; large PostgreSQL benchmarks are **not** CI tasks.
+7. Generate dbt catalog/lineage docs. A failing test blocks CI.
 
 The GitHub runner installs dbt in its Python environment and invokes the **`dbt` CLI directly**. The local `src.phase3.dbt_runner` is for a project `.venv` and is not called from CI. No production/real workbook access is required for synthetic CI. The workflow badge at the top reflects the latest GitHub run; successful local testing does not by itself establish a successful hosted run.
 
@@ -153,16 +154,23 @@ src/phase4/              Quality gates, audit and synthetic fixture
 src/phase5/              Read-only semantic model, report and SQL checks
 src/phase7/              Dagster orchestration (isolated synthetic)
 src/phase8/              Incremental changes, Parquet, Dagster and audit
+src/phase9/              Deterministic performance benchmark and dashboard
 dbt_hr/                  dbt project: sources, staging, marts, tests
 sql/                     PostgreSQL bootstrap and monitoring DDL
 powerbi/                 PBIP/PBIR source, DAX measures and design theme
 tests/                   Unit, integration, recovery and report tests
 docs/phase1..phase5/     Architecture, semantics and runbooks
-docs/phase7..phase8/     Synthetic orchestration and incremental runbooks
+docs/phase7..phase9/     Synthetic orchestration, incremental and performance runbooks
 reports/phase1..phase5/  Non-sensitive verification evidence
-reports/phase7..phase8/  Synthetic validation evidence
+reports/phase7..phase9/  Synthetic validation evidence and benchmark dashboard
 data/raw/                LOCAL ONLY; intentionally ignored by Git
 ```
+
+## Phase 9 - Performance experiments (synthetic-only)
+
+Phase 9 adds a deterministic 5% update / 1% insert workload, a guarded PostgreSQL TEMP-table full-rebuild vs selective-UPSERT benchmark, DuckDB queries over ZSTD Parquet, correctness checks and a local HTML results dashboard. The DuckDB 100K, 500K and 1M runs are measured; PostgreSQL currently has only a 1K correctness/performance smoke result, **not** a verified large-scale speedup. The original HR warehouse, Power BI and real workbook are unaffected.
+
+See the [Phase 9 runbook](docs/phase9/README.md) and [aggregate benchmark dashboard](reports/phase9/benchmark_dashboard.html).
 
 ## Phase 8 - Incremental events and Parquet (synthetic demo)
 
@@ -180,6 +188,6 @@ Start with the optional requirements-dagster.txt dependencies and run the Phase 
 
 The initial analytics platform and dashboard are complete. The six-page screenshot gallery, project case study and interview/demo documentation are available under [docs/portfolio/](docs/portfolio/README.md).
 
-**Now implemented as a synthetic preview:** [Dagster OSS orchestration](docs/phase7/README.md) for dependency lineage, opt-in synthetic runs, retries and disabled-by-default scheduling. **Also implemented:** [Phase 8 fictional incremental event batches](docs/phase8/README.md) with Parquet, source offsets, idempotent UPSERTs and quality audit. **Still planned:** full-load vs incremental synthetic performance comparisons at larger scale (including DuckDB), a validated real source-change contract, and clearly labeled Power BI What-if scenarios. Cloud migration is **optional**, not a requirement for reproducing the project. No GitHub Release or version tag is required for this repository's portfolio documentation.
+**Now implemented as a synthetic preview:** [Dagster OSS orchestration](docs/phase7/README.md) for dependency lineage, opt-in synthetic runs, retries and disabled-by-default scheduling. **Also implemented:** [Phase 8 fictional incremental event batches](docs/phase8/README.md) with Parquet, source offsets, idempotent UPSERTs and quality audit. **Now available:** [Phase 9](docs/phase9/README.md) includes a guarded full-rebuild vs incremental benchmark harness and measured DuckDB/Parquet 100K/500K/1M results; large PostgreSQL run measurements are **still unverified**. **Still planned:** a real source-change contract, controlled large PostgreSQL and file-ingestion comparisons, and labeled Power BI What-if scenarios. Cloud migration is **optional**, not a requirement for reproducing the project. No GitHub Release or version tag is required for this repository's portfolio documentation.
 
 **Privacy:** Do not commit `.env`, credentials, original HR workbooks, employee-level extracts, `.pbi` import caches, or generated database files. The GitHub Actions fixture uses fictional IDs and values. Any public demo or screenshot must use authorized aggregated information or synthetic data only.

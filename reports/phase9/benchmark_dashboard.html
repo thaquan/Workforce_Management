@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport"
+content="width=device-width,initial-scale=1">
+<title>HR Workforce Intelligence | Synthetic Benchmark</title>
+<style>
+:root {color-scheme:dark; font-family:Inter,Segoe UI,Arial,sans-serif;}
+* {box-sizing:border-box} body {margin:0;background:#071825;color:#e8f4f6;}
+main {max-width:1020px;margin:auto;padding:64px 28px;}
+header {border-bottom:1px solid #294553;padding-bottom:30px;margin-bottom:30px;}
+small {text-transform:uppercase;letter-spacing:.18em;color:#6ed5c6;font-weight:700;}
+h1 {font-size:clamp(34px,5vw,56px);line-height:1.1;margin:15px 0;}
+.lead {color:#a2bdc7;font-size:16px;max-width:820px;line-height:1.7}
+.callout {padding:20px 24px;border:1px solid #3d656c;border-left:4px solid #6ed5c6;
+ border-radius:12px;margin:30px 0;background:#102b38}
+h2 {font-size:22px;margin-top:44px}
+.scale {padding:22px;margin:14px 0;border:1px solid #2c4a57;border-radius:15px;background:#102937}
+.scale-top {display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.scale-top span,.note {color:#aac3cd}.bar-row {display:grid;grid-template-columns:110px 1fr 100px;
+ gap:14px;align-items:center;margin:13px 0;font-size:13px}
+.track {height:14px;background:#254455;border-radius:5px;overflow:hidden}
+.bar {height:100%;border-radius:5px}.teal{background:#6ed5c6}.blue{background:#6d9ff1}
+.bar-row b{text-align:right}.note{font-size:12px;margin:15px 0 0}
+table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14px}
+th,td{text-align:left;border-bottom:1px solid #294553;padding:12px 8px}
+th{color:#8fcbd1} td{font-variant-numeric:tabular-nums}
+footer{margin-top:42px;color:#9bb7c2;font-size:13px;line-height:1.7}
+@media(max-width:600px){main{padding:32px 16px}.bar-row{grid-template-columns:84px 1fr 76px;gap:7px;font-size:11px}}
+</style></head><body><main>
+<header><small>HR Workforce Intelligence / Phase 09</small>
+<h1>Benchmark without invented performance claims.</h1>
+<p class="lead">Reproducible synthetic data, ZSTD Parquet and SQL query measurements.
+All numbers below were measured locally; they are not a production benchmark
+and do not describe the actual HR dataset.</p></header>
+<div class="callout"><b>Experimental method.</b> Five-percent existing-row updates
+and one-percent new records; deterministic integer-only synthetic records.
+Each DuckDB query is warmed up, then timed three times for published scales.
+The charts show per-scale query median and compressed file size, not full-pipeline latency.</div>
+<h2>Analytical query and storage</h2><div class="scale"><div class="scale-top"><strong>1,000 baseline records</strong><span>1,010 final · 60 changes</span></div><div class="bar-row"><span>DuckDB scan</span><div class="track"><div class="bar teal" style="width:28.21%"></div></div><b>5.95 ms</b></div><div class="bar-row"><span>Parquet size</span><div class="track"><div class="bar blue" style="width:3.00%"></div></div><b>0.01 MB</b></div><p class="note">Postgres rebuild: 8.79 ms / UPSERT: 6.41 ms</p></div>
+<div class="scale"><div class="scale-top"><strong>100,000 baseline records</strong><span>101,000 final · 6,000 changes</span></div><div class="bar-row"><span>DuckDB scan</span><div class="track"><div class="bar teal" style="width:31.77%"></div></div><b>6.70 ms</b></div><div class="bar-row"><span>Parquet size</span><div class="track"><div class="bar blue" style="width:11.30%"></div></div><b>0.31 MB</b></div><p class="note">PostgreSQL full vs incremental not measured at this scale</p></div>
+<div class="scale"><div class="scale-top"><strong>500,000 baseline records</strong><span>505,000 final · 30,000 changes</span></div><div class="bar-row"><span>DuckDB scan</span><div class="track"><div class="bar teal" style="width:62.85%"></div></div><b>13.26 ms</b></div><div class="bar-row"><span>Parquet size</span><div class="track"><div class="bar blue" style="width:50.76%"></div></div><b>1.41 MB</b></div><p class="note">PostgreSQL full vs incremental not measured at this scale</p></div>
+<div class="scale"><div class="scale-top"><strong>1,000,000 baseline records</strong><span>1,010,000 final · 60,000 changes</span></div><div class="bar-row"><span>DuckDB scan</span><div class="track"><div class="bar teal" style="width:100.00%"></div></div><b>21.10 ms</b></div><div class="bar-row"><span>Parquet size</span><div class="track"><div class="bar blue" style="width:100.00%"></div></div><b>2.78 MB</b></div><p class="note">PostgreSQL full vs incremental not measured at this scale</p></div>
+<h2>Interpretation</h2>
+<p class="lead">Measured elapsed time depends on the machine, engine settings,
+cache state and selectivity. Bar lengths compare scales within each metric only.
+No speedup is claimed where PostgreSQL full-load and incremental workloads were not
+measured. The separate PostgreSQL 1K smoke test checks correctness, not capacity.</p>
+<footer><b>Privacy & integrity:</b> All source rows were generated from integer formulas.
+No real names, salary records, IDs or original HR workbook were loaded.
+Full-row PostgreSQL correctness and cross-engine aggregate equality must pass
+before any comparative claims. See docs/phase9/README.md for commands.</footer>
+</main></body></html>
