@@ -44,9 +44,10 @@ jobs:
             requirements.txt
             requirements-dbt.txt
             requirements-dagster.txt
+            requirements-phase8.txt
       - name: Install pinned tools
         run: |
-          python -m pip install -r requirements.txt -r requirements-dbt.txt -r requirements-dagster.txt
+          python -m pip install -r requirements.txt -r requirements-dbt.txt -r requirements-dagster.txt -r requirements-phase8.txt
           dbt --version
       - name: Static source, contract and safety checks
         run: |
@@ -58,6 +59,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_phase5_*.py' -v
       - name: Phase 7 Dagster graph and safety checks (offline)
         run: python -m unittest discover -s tests -p 'test_phase7_*.py' -v
+      - name: Phase 8 offline incremental and Parquet checks
+        run: python -m unittest discover -s tests -p 'test_phase8_incremental.py' -v
       - name: Create isolated synthetic source tables
         run: python -m src.phase4.synthetic_fixture
       - name: Build dbt models and generic tests (exclude real workbook baselines)
@@ -68,5 +71,12 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_phase4_recovery.py' -v
       - name: Phase 7 Dagster on the disposable synthetic PostgreSQL database
         run: python -m src.phase7.run --mode synthetic --allow-disposable-reset
+      - name: Phase 8 transactional recovery and incremental integration
+        env:
+          HR_PHASE8_ALLOW_WRITE: "YES"
+          HR_PHASE8_INTEGRATION_TESTS: "YES"
+        run: python -m unittest discover -s tests -p 'test_phase8_postgres.py' -v
+      - name: Phase 8 Dagster Parquet replay and quality marker
+        run: python -m src.phase8.run --mode synthetic --allow-synthetic-write
       - name: Generate dbt lineage docs
         run: dbt docs generate --project-dir dbt_hr --profiles-dir dbt_hr
