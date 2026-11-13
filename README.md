@@ -4,7 +4,7 @@
 
 **End-to-end Data Engineering + Power BI portfolio project** for workforce planning, attrition, retention, recruitment operations, and data quality.
 
-**Status:** Phases **1–5 implemented**. Six Power BI report pages and 51 DAX measures have been validated locally. GitHub Actions uses **invented synthetic HR data**; the real HR workbook and imported employee records are not in this repository.
+**Status:** Phases **1–5 and 7–10 implemented** (Phases 7–10 are synthetic-only extensions; portfolio assets live under `docs/portfolio/`). Six Power BI report pages and 51 DAX measures have been validated locally. GitHub Actions uses **invented synthetic HR data**; the real HR workbook and imported employee records are not in this repository.
 
 > This project is a historical workforce analytics case study, **not a live HR system**. Its available business-data period is January 2023–December 2025.
 
@@ -63,6 +63,10 @@ The local production-like pipeline remains inexpensive: no mandatory cloud wareh
 | **3 — Analytics warehouse** | 36 dbt models and **83 data tests** (full-data baseline); generated lineage | [Phase 3 handoff](docs/phase3/README.md), [KPI contracts](docs/phase3/02_kpi_semantics.md) |
 | **4 — Quality & operations** | **18 executable quality checks**, persisted audit, safe rollback tests and synthetic CI | [Phase 4 handoff](docs/phase4/README.md), [acceptance](reports/phase4/acceptance_report.md) |
 | **5 — Power BI** | **51 DAX measures**, six editable PBIR dashboard pages and report checks | [Power BI setup](powerbi/README.md), [report documentation](docs/phase5/README.md), [validation summary](reports/phase5/validation_summary.md) |
+| **7 - Dagster** | Dependency graph, retries and opt-in synthetic orchestration | [Phase 7 runbook](docs/phase7/README.md) |
+| **8 - Incremental processing** | Parquet change batches, offset watermark, replay safety and guarded UPSERTs | [Phase 8 runbook](docs/phase8/README.md) |
+| **9 - Benchmarks** | Synthetic PostgreSQL/DuckDB correctness and performance experiments | [Phase 9 runbook](docs/phase9/README.md) |
+| **10 - Cloud readiness** | Immutable Bronze/Silver/Gold Parquet bundle and versioned checksum manifest | [Phase 10 runbook](docs/phase10/README.md) |
 
 ### Six Power BI report pages
 
@@ -120,7 +124,8 @@ The [Quality Gates (Synthetic CI) workflow](.github/workflows/quality-ci.yml) ex
 4. Run the auditable Phase 4 quality gates and destructive/recovery regression tests **only against the isolated synthetic database**.
 5. Verify Dagster Phase 7 and Phase 8 offline contracts plus isolated PostgreSQL orchestration and transactional incremental recovery.
 6. Run Phase 9 DuckDB/Parquet correctness checks and small offline synthetic benchmark smoke; large PostgreSQL benchmarks are **not** CI tasks.
-7. Generate dbt catalog/lineage docs. A failing test blocks CI.
+7. Build, verify and replay Phase 10 synthetic Bronze/Silver/Gold Parquet with manifest and privacy checks (no cloud credentials).
+8. Generate dbt catalog/lineage docs. A failing test blocks CI.
 
 The GitHub runner installs dbt in its Python environment and invokes the **`dbt` CLI directly**. The local `src.phase3.dbt_runner` is for a project `.venv` and is not called from CI. No production/real workbook access is required for synthetic CI. The workflow badge at the top reflects the latest GitHub run; successful local testing does not by itself establish a successful hosted run.
 
@@ -155,16 +160,28 @@ src/phase5/              Read-only semantic model, report and SQL checks
 src/phase7/              Dagster orchestration (isolated synthetic)
 src/phase8/              Incremental changes, Parquet, Dagster and audit
 src/phase9/              Deterministic performance benchmark and dashboard
+src/phase10/             Offline cloud-ready synthetic Parquet export
 dbt_hr/                  dbt project: sources, staging, marts, tests
 sql/                     PostgreSQL bootstrap and monitoring DDL
 powerbi/                 PBIP/PBIR source, DAX measures and design theme
 tests/                   Unit, integration, recovery and report tests
 docs/phase1..phase5/     Architecture, semantics and runbooks
-docs/phase7..phase9/     Synthetic orchestration, incremental and performance runbooks
+docs/phase7..phase10/    Synthetic extensions and optional cloud-readiness runbooks
 reports/phase1..phase5/  Non-sensitive verification evidence
 reports/phase7..phase9/  Synthetic validation evidence and benchmark dashboard
 data/raw/                LOCAL ONLY; intentionally ignored by Git
 ```
+
+## Phase 10 - Cloud-ready lakehouse handoff (synthetic-only)
+
+Phase 10 prepares an **offline, immutable Bronze/Silver/Gold Parquet bundle**
+and a versioned SHA-256 manifest from the fictional Phase 8 events. It validates
+source offsets, late-event version semantics, schemas, hashes and replay safety
+without connecting to PostgreSQL or any cloud service. The export includes 8
+Bronze events, 4 Silver employee states (one deleted) and 2 Gold department
+aggregates. No actual employee records, credentials or Power BI imports are
+read or modified. See the [Phase 10 runbook](docs/phase10/README.md) for local
+commands and optional future paths to Microsoft Fabric or AWS.
 
 ## Phase 9 - Performance experiments (synthetic-only)
 
@@ -188,6 +205,6 @@ Start with the optional requirements-dagster.txt dependencies and run the Phase 
 
 The initial analytics platform and dashboard are complete. The six-page screenshot gallery, project case study and interview/demo documentation are available under [docs/portfolio/](docs/portfolio/README.md).
 
-**Now implemented as a synthetic preview:** [Dagster OSS orchestration](docs/phase7/README.md) for dependency lineage, opt-in synthetic runs, retries and disabled-by-default scheduling. **Also implemented:** [Phase 8 fictional incremental event batches](docs/phase8/README.md) with Parquet, source offsets, idempotent UPSERTs and quality audit. **Now available:** [Phase 9](docs/phase9/README.md) includes a guarded full-rebuild vs incremental benchmark harness and measured DuckDB/Parquet 100K/500K/1M results; large PostgreSQL run measurements are **still unverified**. **Still planned:** a real source-change contract, controlled large PostgreSQL and file-ingestion comparisons, and labeled Power BI What-if scenarios. Cloud migration is **optional**, not a requirement for reproducing the project. No GitHub Release or version tag is required for this repository's portfolio documentation.
+**Implemented synthetic extensions:** [Phase 7 orchestration](docs/phase7/README.md), [Phase 8 incremental event replay](docs/phase8/README.md), [Phase 9 synthetic performance experiments](docs/phase9/README.md), and [Phase 10 cloud-ready Parquet handoff](docs/phase10/README.md). Phase 9's large PostgreSQL runs are **still unverified**. **Still planned:** a real source-change contract, controlled large PostgreSQL and file-ingestion comparisons, and clearly labelled Power BI What-if scenarios. A real Microsoft Fabric/AWS deployment requires separate provider and destination approval; cloud migration is **optional**, not a requirement for reproducing the project. No GitHub Release or version tag is required for this repository's portfolio documentation.
 
 **Privacy:** Do not commit `.env`, credentials, original HR workbooks, employee-level extracts, `.pbi` import caches, or generated database files. The GitHub Actions fixture uses fictional IDs and values. Any public demo or screenshot must use authorized aggregated information or synthetic data only.

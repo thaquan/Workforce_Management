@@ -10,6 +10,7 @@ Use only claims verified by the repository and current tests; do not describe pl
 - Designed a dimensional analytics warehouse using **36 dbt models** (staging, intermediate, five dimensions, eight facts and seven business marts), supported by **83 full-dataset tests** and documented grain/KPI contracts.
 - Implemented **18 pipeline data-quality gates**, historical reconciliation checks and failure/rollback recovery workflows; kept **33/36 source headcount mismatches** visible as REVIEW rather than silently correcting the source.
 - Automated GitHub Actions validation against an **isolated synthetic PostgreSQL database**; validated **116 dbt build/test steps** and separate Python regression tests without publishing employee-level data.
+- Built offline **synthetic-only** incremental, orchestration and lakehouse portability exercises: Dagster assets, immutable Parquet batches, source-offset/version handling, and a checksum-verified Bronze/Silver/Gold export (not deployed to any cloud account).
 
 ## Data Analyst / BI-oriented (English)
 
@@ -31,7 +32,7 @@ Use only claims verified by the repository and current tests; do not describe pl
 - “Reduced attrition by X%” — not measured.
 - “Improved HR business results by X%” — no causal/business impact study.
 - “Real-time HR analytics” — Power BI is Import mode; source ends December 2025.
-- “Streaming, Dagster, Spark, Kafka, cloud lakehouse in production” — not implemented in the documented Phases 1–5.
+- “Real-time streaming, Spark, Kafka or a production cloud lakehouse” — the Dagster and Parquet extensions are offline/synthetic demos, not deployed production services.
 - “Predictive retention model” — only descriptive endpoint cohort comparisons are implemented.
 
 See [case study](case_study.md), [architecture](architecture.md), [gallery](README.md) and [demo script](demo_walkthrough.md).

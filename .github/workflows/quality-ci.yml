@@ -66,6 +66,14 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_phase9_*.py' -v
       - name: Phase 9 DuckDB and Parquet synthetic smoke (no PostgreSQL)
         run: python -m src.phase9.run --mode duckdb --rows 10000 --repeats 2
+      - name: Phase 10 cloud-ready export contract and privacy checks
+        run: python -m unittest discover -s tests -p 'test_phase10_*.py' -v
+      - name: Phase 10 offline Parquet export, verify and replay
+        run: |
+          python -m src.phase10.run --mode plan
+          python -m src.phase10.run --mode export
+          python -m src.phase10.run --mode verify
+          python -m src.phase10.run --mode export
       - name: Create isolated synthetic source tables
         run: python -m src.phase4.synthetic_fixture
       - name: Build dbt models and generic tests (exclude real workbook baselines)

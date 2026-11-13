@@ -61,4 +61,19 @@ The repository does **not** publish source workbook rows, individual-level emplo
 - Power BI: native visuals and 51 modeled DAX measures; individual employee information is not exported in the public gallery.
 - Self-hosting: the primary stack can run locally without recurring paid cloud services.
 
-For current commands and version pins, see the [root README](../../README.md) and [Phase 4 synthetic CI docs](../phase4/03_ci_workflow.md). For the next *planned* orchestration layer, see the [Dagster extension plan](../phase7/dagster_extension_plan.md).
+## Optional synthetic-only extensions
+
+These demonstrations are isolated from the private HR ingestion and Power BI
+Service report. They do not imply that the real workbook is streamed, replicated
+to the cloud or automatically refreshed.
+
+| Phase | Reproducible capability | Evidence |
+|---|---|---|
+| 7 | Dagster asset orchestration in a disposable synthetic environment | [Phase 7](../phase7/README.md) |
+| 8 | Immutable change batches, source offsets, late event/version handling and guarded PostgreSQL replay | [Phase 8](../phase8/README.md) |
+| 9 | PostgreSQL and DuckDB performance experiments, with scale-specific measured/unmeasured caveats | [Phase 9](../phase9/README.md) |
+| 10 | Local Bronze/Silver/Gold Parquet handoff, checksums and strict fictional-data contract | [Phase 10](../phase10/README.md) |
+
+For current commands and version pins, see the [root README](../../README.md)
+and [Phase 4 synthetic CI docs](../phase4/03_ci_workflow.md). Hosting data
+in Fabric or AWS remains optional and requires separate authorization.
