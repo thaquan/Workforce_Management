@@ -1,0 +1,2 @@
+﻿# Optional Phase 8 local Parquet dependency (Python 3.13).
+pyarrow==23.0.1
